@@ -29,7 +29,7 @@ using namespace nvinfer1::plugin;
 
 #include "batchTilePlugin.h"
 #include "batchedNMSPlugin.h"
-#inlucde "batchedNMSLandmarkPlugin.h"
+#include "batchedNMSLandmarkPlugin.h"
 #include "coordConvACPlugin.h"
 #include "cropAndResizePlugin.h"
 #include "decodeBbox3D.h"
