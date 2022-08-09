@@ -37,25 +37,25 @@ const char *NMS_PLUGIN_VERSION{"1"};
 const char *NMS_PLUGIN_NAMES[] = {"BatchedNMSLandmark_TRT", "BatchedNMSLandmarkDynamic_TRT"};
 } // namespace
 
-namespace nvinfer1 {
-namespace plugin {
-template <>
-void write<NMSParameters>(char *&buffer, const NMSParameters &val)
-{
-    auto *param = reinterpret_cast<NMSParameters *>(buffer);
-    std::memset(param, 0, sizeof(NMSParameters));
-    param->shareLocation = val.shareLocation;
-    param->backgroundLabelId = val.backgroundLabelId;
-    param->numClasses = val.numClasses;
-    param->topK = val.topK;
-    param->keepTopK = val.keepTopK;
-    param->scoreThreshold = val.scoreThreshold;
-    param->iouThreshold = val.iouThreshold;
-    param->isNormalized = val.isNormalized;
-    buffer += sizeof(NMSParameters);
-}
-} // namespace plugin
-} // namespace nvinfer1
+// namespace nvinfer1 {
+// namespace plugin {
+// template <>
+// void write<NMSParameters>(char *&buffer, const NMSParameters &val)
+// {
+//     auto *param = reinterpret_cast<NMSParameters *>(buffer);
+//     std::memset(param, 0, sizeof(NMSParameters));
+//     param->shareLocation = val.shareLocation;
+//     param->backgroundLabelId = val.backgroundLabelId;
+//     param->numClasses = val.numClasses;
+//     param->topK = val.topK;
+//     param->keepTopK = val.keepTopK;
+//     param->scoreThreshold = val.scoreThreshold;
+//     param->iouThreshold = val.iouThreshold;
+//     param->isNormalized = val.isNormalized;
+//     buffer += sizeof(NMSParameters);
+// }
+// } // namespace plugin
+// } // namespace nvinfer1
 
 PluginFieldCollection BatchedNMSLandmarkBasePluginCreator::mFC{};
 std::vector<PluginField> BatchedNMSLandmarkBasePluginCreator::mPluginAttributes;
