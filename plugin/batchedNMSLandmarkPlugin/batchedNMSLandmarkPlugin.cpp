@@ -430,12 +430,11 @@ void BatchedNMSLandmarkPlugin::configurePlugin(const Dims *inputDims,
         ASSERT(nbInputs == 3);
         ASSERT(nbOutputs == 5);
         ASSERT(inputDims[0].nbDims == 3);
-        ASSERT(inputDims[1].nbDims == 2 ||
-                      (inputDims[1].nbDims == 3 && inputDims[1].d[2] == 1));
+        ASSERT(inputDims[1].nbDims == 2 || (inputDims[1].nbDims == 3 && inputDims[1].d[2] == 1));
         ASSERT(
             std::none_of(inputIsBroadcast, inputIsBroadcast + nbInputs, [](bool b) { return b; }));
         ASSERT(std::none_of(outputIsBroadcast, outputIsBroadcast + nbInputs,
-                                   [](bool b) { return b; }));
+                            [](bool b) { return b; }));
 
         boxesSize = inputDims[0].d[0] * inputDims[0].d[1] * inputDims[0].d[2];
         scoresSize = inputDims[1].d[0] * inputDims[1].d[1];
@@ -473,7 +472,7 @@ void BatchedNMSLandmarkDynamicPlugin::configurePlugin(const DynamicPluginTensorD
         // Constant shape: [batch_size, num_boxes, num_classes] or [batch_size, num_boxes,
         // num_classes, 1]
         ASSERT(in[1].desc.dims.nbDims == 3 ||
-                      (in[1].desc.dims.nbDims == 4 && in[1].desc.dims.d[3] == 1));
+               (in[1].desc.dims.nbDims == 4 && in[1].desc.dims.d[3] == 1));
 
         boxesSize = in[0].desc.dims.d[1] * in[0].desc.dims.d[2] * in[0].desc.dims.d[3];
         scoresSize = in[1].desc.dims.d[1] * in[1].desc.dims.d[2];
