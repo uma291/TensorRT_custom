@@ -390,7 +390,7 @@ void BatchedNMSLandmarkPlugin::serialize(void *buffer) const noexcept
     write(d, mPrecision);
     write(d, mScoreBits);
     write(d, mCaffeSemantics);
-    PLUGIN_ASSERT(d == a + getSerializationSize());
+    ASSERT(d == a + getSerializationSize());
 }
 
 size_t BatchedNMSLandmarkDynamicPlugin::getSerializationSize() const noexcept
