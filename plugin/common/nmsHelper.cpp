@@ -51,6 +51,31 @@ size_t detectionForwardBBoxPermuteSize(bool shareLocation, int N, int C1, DataTy
     return (size_t) -1;
 }
 
+size_t detectionForwardLandmarkDataSize(int N, int C3, DataType DT_BBOX) {
+    if (DT_BBOX == DataType::kFLOAT) {
+        return N * C3 * sizeof(float);
+    }
+    if (DT_BBOX == DataType::kHALF) {
+        return N * C3 * sizeof(__half);
+    }
+
+    printf("Only FP32/FP16 type bounding boxes are supported.\n");
+    return (size_t)-1;
+}
+
+size_t detectionForwardLandmarkPermuteSize(bool shareLocation, int N, int C3,
+                                           DataType DT_BBOX) {
+    if (DT_BBOX == DataType::kFLOAT) {
+        return shareLocation ? 0 : N * C3 * sizeof(float);
+    }
+    if (DT_BBOX == DataType::kHALF) {
+        return shareLocation ? 0 : N * C3 * sizeof(__half);
+    }
+
+    printf("Only FP32/FP16 type bounding boxes are supported.\n");
+    return (size_t)-1;
+}
+
 size_t detectionForwardPreNMSSize(int N, int C2)
 {
     ASSERT(sizeof(float) == sizeof(int));

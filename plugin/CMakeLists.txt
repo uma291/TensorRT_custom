@@ -32,6 +32,7 @@ set(PLUGIN_CU_SOURCES)
 set(PLUGIN_LISTS
     batchTilePlugin
     batchedNMSPlugin
+    batchedNMSLandmarkPlugin
     coordConvACPlugin
     cropAndResizePlugin
     decodeBbox3DPlugin

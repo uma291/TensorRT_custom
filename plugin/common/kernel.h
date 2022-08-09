@@ -52,6 +52,18 @@ pluginStatus_t nmsInference(cudaStream_t stream, int N, int boxesSize, int score
     void* nmsedBoxes, void* nmsedScores, void* nmsedClasses, void* workspace, bool isNormalized = true,
     bool confSigmoid = false, bool clipBoxes = true, int scoreBits = 16, bool caffeSemantics = true);
 
+pluginStatus_t
+nmsInference(cudaStream_t stream, int N, int boxesSize, int scoresSize,
+             int landmarksSize, bool shareLocation, int backgroundLabelId,
+             int numPredsPerClass, int numClasses, int topK, int keepTopK,
+             float scoreThreshold, float iouThreshold, DataType DT_BBOX,
+             const void *locData, DataType DT_SCORE, const void *confData,
+             const void *landData, void *keepCount, void *nmsedBoxes,
+             void *nmsedScores, void *nmsedClasses, void *nmsedLandmarks,
+             void *workspace, bool isNormalized = true,
+             bool confSigmoid = false, bool clipBoxes = true,
+             int scoreBits = 16, bool caffeSemantics = true);
+
 pluginStatus_t gatherTopDetections(cudaStream_t stream, bool shareLocation, int numImages, int numPredsPerClass,
     int numClasses, int topK, int keepTopK, DataType DT_BBOX, DataType DT_SCORE, const void* indices,
     const void* scores, const void* bboxData, void* keepCount, void* topDetections, const float scoreShift);
@@ -59,6 +71,11 @@ pluginStatus_t gatherTopDetections(cudaStream_t stream, bool shareLocation, int 
 size_t detectionForwardBBoxDataSize(int N, int C1, DataType DT_BBOX);
 
 size_t detectionForwardBBoxPermuteSize(bool shareLocation, int N, int C1, DataType DT_BBOX);
+
+size_t detectionForwardLandmarkDataSize(int N, int C3, DataType DT_BBOX);
+
+size_t detectionForwardLandmarkPermuteSize(bool shareLocation, int N, int C3,
+                                           DataType DT_BBOX);
 
 size_t sortScoresPerClassWorkspaceSize(int num, int num_classes, int num_preds_per_class, DataType DT_CONF);
 
