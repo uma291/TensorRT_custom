@@ -171,8 +171,9 @@ extern "C"
     {
         initializePlugin<nvinfer1::plugin::BatchTilePluginCreator>(logger, libNamespace);
         initializePlugin<nvinfer1::plugin::BatchedNMSPluginCreator>(logger, libNamespace);
-        initializePlugin<nvinfer1::plugin::BatchedNMSLandmarkPluginCreator>(logger, libNamespace);
         initializePlugin<nvinfer1::plugin::BatchedNMSDynamicPluginCreator>(logger, libNamespace);
+        initializePlugin<nvinfer1::plugin::BatchedNMSLandmarkPluginCreator>(logger, libNamespace);
+        initializePlugin<nvinfer1::plugin::BatchedNMSLandmarkDynamicPluginCreator>(logger, libNamespace);
         initializePlugin<nvinfer1::plugin::CoordConvACPluginCreator>(logger, libNamespace);
         initializePlugin<nvinfer1::plugin::CropAndResizePluginCreator>(logger, libNamespace);
         initializePlugin<nvinfer1::plugin::CropAndResizeDynamicPluginCreator>(logger, libNamespace);
