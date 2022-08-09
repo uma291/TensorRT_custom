@@ -11,3 +11,6 @@ Batched NMS with face landmark
 - Deepstream 6.0.1
 
 Follow guide from [github.com/NVIDIA-AI-IOT/deepstream_tao_apps](https://github.com/NVIDIA-AI-IOT/deepstream_tao_apps/blob/master/TRT-OSS/x86/README.md)
+
+# Acknowledgments
+- [NNDam/TensorRT-CPP](https://github.com/NNDam/TensorRT-CPP)
