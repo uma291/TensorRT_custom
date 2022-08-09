@@ -37,13 +37,13 @@ inline __device__ float minus_fb(const float &a, const float &b)
 }
 
 template <typename T_BBOX>
-__device__ T_BBOX saturate(T_BBOX v)
+inline __device__ T_BBOX saturate(T_BBOX v)
 {
     return max(min(v, T_BBOX(1)), T_BBOX(0));
 }
 
 template <>
-__device__ __half saturate(__half v)
+inline __device__ __half saturate(__half v)
 {
 #if __CUDA_ARCH__ >= 800
     return __hmax(__hmin(v, __half(1)), __half(0));
