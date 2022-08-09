@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef TRT_BATCHED_NMS_PLUGIN_H
-#define TRT_BATCHED_NMS_PLUGIN_H
+#ifndef TRT_BATCHED_NMS_LANDMARK_PLUGIN_H
+#define TRT_BATCHED_NMS_LANDMARK_PLUGIN_H
 #include <string>
 #include <vector>
 
@@ -190,4 +190,4 @@ public:
 } // namespace plugin
 } // namespace nvinfer1
 
-#endif // TRT_BATCHED_NMS_PLUGIN_H
+#endif // TRT_BATCHED_NMS_LANDMARK_PLUGIN_H
