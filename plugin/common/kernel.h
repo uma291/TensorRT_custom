@@ -64,6 +64,18 @@ nmsInference(cudaStream_t stream, int N, int boxesSize, int scoresSize,
              bool confSigmoid = false, bool clipBoxes = true,
              int scoreBits = 16, bool caffeSemantics = true);
 
+pluginStatus_t
+nmsInference(cudaStream_t stream, int N, int boxesSize, int scoresSize,
+             int landmarksSize, int landmarksConfSize, bool shareLocation, int backgroundLabelId,
+             int numPredsPerClass, int numClasses, int topK, int keepTopK,
+             float scoreThreshold, float iouThreshold, DataType DT_BBOX,
+             const void *locData, DataType DT_SCORE, const void *confData,
+             const void *landData,const void* landConf, void *keepCount, void *nmsedBoxes,
+             void *nmsedScores, void *nmsedClasses, void *nmsedLandmarks,void *nmsedLandmarksConf,
+             void *workspace, bool isNormalized = true,
+             bool confSigmoid = false, bool clipBoxes = true,
+             int scoreBits = 16, bool caffeSemantics = true);
+
 pluginStatus_t gatherTopDetections(cudaStream_t stream, bool shareLocation, int numImages, int numPredsPerClass,
     int numClasses, int topK, int keepTopK, DataType DT_BBOX, DataType DT_SCORE, const void* indices,
     const void* scores, const void* bboxData, void* keepCount, void* topDetections, const float scoreShift);

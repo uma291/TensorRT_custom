@@ -33,6 +33,7 @@ set(PLUGIN_LISTS
     batchTilePlugin
     batchedNMSPlugin
     batchedNMSLandmarkPlugin
+    batchedNMSLandmarkConfPlugin
     coordConvACPlugin
     cropAndResizePlugin
     decodeBbox3DPlugin

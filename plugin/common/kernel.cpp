@@ -51,6 +51,26 @@ size_t detectionInferenceWorkspaceSize(bool shareLocation, int N, int C1,
     return calculateTotalWorkspaceSize(wss, 8);
 }
 
+size_t detectionInferenceWorkspaceSize(bool shareLocation, int N, int C1,
+                                       int C2, int C3, int C4,int numClasses,
+                                       int numPredsPerClass, int topK,
+                                       DataType DT_BBOX, DataType DT_SCORE) {
+    size_t wss[8];
+    wss[0] = detectionForwardBBoxDataSize(N, C1, DT_BBOX);
+    wss[1] = detectionForwardBBoxPermuteSize(shareLocation, N, C1, DT_BBOX);
+    wss[2] = detectionForwardPreNMSSize(N, C2);
+    wss[3] = detectionForwardPreNMSSize(N, C2);
+    wss[4] = detectionForwardPostNMSSize(N, numClasses, topK);
+    wss[5] = detectionForwardPostNMSSize(N, numClasses, topK);
+    wss[6] =
+        std::max(sortScoresPerClassWorkspaceSize(N, numClasses, numPredsPerClass,
+                                                DT_SCORE),
+                sortScoresPerImageWorkspaceSize(N, numClasses * topK, DT_SCORE));
+    wss[7] = detectionForwardLandmarkDataSize(N, C3, DT_BBOX);
+    wss[8] = detectionForwardPreNMSSize(N, C4);
+    return calculateTotalWorkspaceSize(wss, 9);
+}
+
 
 namespace nvinfer1
 {

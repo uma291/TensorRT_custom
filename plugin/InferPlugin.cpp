@@ -30,6 +30,7 @@ using namespace nvinfer1::plugin;
 #include "batchTilePlugin.h"
 #include "batchedNMSPlugin.h"
 #include "batchedNMSLandmarkPlugin.h"
+#include "batchedNMSLandmarkConfPlugin.h"
 #include "coordConvACPlugin.h"
 #include "cropAndResizePlugin.h"
 #include "decodeBbox3D.h"
@@ -174,6 +175,8 @@ extern "C"
         initializePlugin<nvinfer1::plugin::BatchedNMSDynamicPluginCreator>(logger, libNamespace);
         initializePlugin<nvinfer1::plugin::BatchedNMSLandmarkPluginCreator>(logger, libNamespace);
         initializePlugin<nvinfer1::plugin::BatchedNMSLandmarkDynamicPluginCreator>(logger, libNamespace);
+        initializePlugin<nvinfer1::plugin::BatchedNMSLandmarkConfPluginCreator>(logger, libNamespace);
+        initializePlugin<nvinfer1::plugin::BatchedNMSLandmarkConfDynamicPluginCreator>(logger, libNamespace);
         initializePlugin<nvinfer1::plugin::CoordConvACPluginCreator>(logger, libNamespace);
         initializePlugin<nvinfer1::plugin::CropAndResizePluginCreator>(logger, libNamespace);
         initializePlugin<nvinfer1::plugin::CropAndResizeDynamicPluginCreator>(logger, libNamespace);
