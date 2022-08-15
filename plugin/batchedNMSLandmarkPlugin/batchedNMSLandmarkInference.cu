@@ -19,7 +19,7 @@
 #include "kernel.h"
 #include "nmsUtils.h"
 
-pluginStatus_t nmsInference(cudaStream_t stream,
+pluginStatus_t nmsInferenceLandmark(cudaStream_t stream,
                             const int N,
                             const int perBatchBoxesSize,
                             const int perBatchScoresSize,

@@ -322,7 +322,7 @@ int BatchedNMSLandmarkPlugin::enqueue(int32_t batchSize,
         void *nmsedClasses = outputs[3];
         void *nmsedLandmarks = outputs[4];
 
-        pluginStatus_t status = nmsInference(
+        pluginStatus_t status = nmsInferenceLandmark(
             stream, batchSize, boxesSize, scoresSize, landmarksSize, param.shareLocation,
             param.backgroundLabelId, numPriors, param.numClasses, param.topK, param.keepTopK,
             param.scoreThreshold, param.iouThreshold, mPrecision, locData, mPrecision, confData,
@@ -358,7 +358,7 @@ int BatchedNMSLandmarkDynamicPlugin::enqueue(const PluginTensorDesc *inputDesc,
         void *nmsedLandmarks = outputs[4];
 
         pluginStatus_t status =
-            nmsInference(stream, inputDesc[0].dims.d[0], boxesSize, scoresSize, landmarksSize,
+            nmsInferenceLandmark(stream, inputDesc[0].dims.d[0], boxesSize, scoresSize, landmarksSize,
                          param.shareLocation, param.backgroundLabelId, numPriors, param.numClasses,
                          param.topK, param.keepTopK, param.scoreThreshold, param.iouThreshold,
                          mPrecision, locData, mPrecision, confData, landData, keepCount, nmsedBoxes,
