@@ -78,16 +78,17 @@ __launch_bounds__(nthds_per_cta) __global__
             nmsedBoxes[i * 4 + 1] = 0;
             nmsedBoxes[i * 4 + 2] = 0;
             nmsedBoxes[i * 4 + 3] = 0;
-            nmsedLandmarks[i * 10] = 0;
-            nmsedLandmarks[i * 10 + 1] = 0;
-            nmsedLandmarks[i * 10 + 2] = 0;
-            nmsedLandmarks[i * 10 + 3] = 0;
-            nmsedLandmarks[i * 10 + 4] = 0;
-            nmsedLandmarks[i * 10 + 5] = 0;
-            nmsedLandmarks[i * 10 + 6] = 0;
-            nmsedLandmarks[i * 10 + 7] = 0;
-            nmsedLandmarks[i * 10 + 8] = 0;
-            nmsedLandmarks[i * 10 + 9] = 0;
+            nmsedLandmarks[i * 11] = 0;
+            nmsedLandmarks[i * 11 + 1] = 0;
+            nmsedLandmarks[i * 11 + 2] = 0;
+            nmsedLandmarks[i * 11 + 3] = 0;
+            nmsedLandmarks[i * 11 + 4] = 0;
+            nmsedLandmarks[i * 11 + 5] = 0;
+            nmsedLandmarks[i * 11 + 6] = 0;
+            nmsedLandmarks[i * 11 + 7] = 0;
+            nmsedLandmarks[i * 11 + 8] = 0;
+            nmsedLandmarks[i * 11 + 9] = 0;
+            nmsedLandmarks[i * 11 + 10] = 0;
         }
         else
         {
@@ -98,18 +99,19 @@ __launch_bounds__(nthds_per_cta) __global__
             nmsedClasses[i] = (index % (numClasses * numPredsPerClass)) / numPredsPerClass; // label
             nmsedScores[i] = score;                                                         // confidence score
             nmsedScores[i] = minus_fb(nmsedScores[i], scoreShift);
-            const int lankmarkId = (index % numPredsPerClass) * 10;
+            const int lankmarkId = (index % numPredsPerClass) * 11;
 
-            nmsedLandmarks[i * 10] = (T_BBOX) landData[lankmarkId];
-            nmsedLandmarks[i * 10 + 1] = (T_BBOX) landData[lankmarkId + 1];
-            nmsedLandmarks[i * 10 + 2] = (T_BBOX) landData[lankmarkId + 2];
-            nmsedLandmarks[i * 10 + 3] = (T_BBOX) landData[lankmarkId + 3];
-            nmsedLandmarks[i * 10 + 4] = (T_BBOX) landData[lankmarkId + 4];
-            nmsedLandmarks[i * 10 + 5] = (T_BBOX) landData[lankmarkId + 5];
-            nmsedLandmarks[i * 10 + 6] = (T_BBOX) landData[lankmarkId + 6];
-            nmsedLandmarks[i * 10 + 7] = (T_BBOX) landData[lankmarkId + 7];
-            nmsedLandmarks[i * 10 + 8] = (T_BBOX) landData[lankmarkId + 8];
-            nmsedLandmarks[i * 10 + 9] = (T_BBOX) landData[lankmarkId + 9];
+            nmsedLandmarks[i * 11] = (T_BBOX) landData[lankmarkId];
+            nmsedLandmarks[i * 11 + 1] = (T_BBOX) landData[lankmarkId + 1];
+            nmsedLandmarks[i * 11 + 2] = (T_BBOX) landData[lankmarkId + 2];
+            nmsedLandmarks[i * 11 + 3] = (T_BBOX) landData[lankmarkId + 3];
+            nmsedLandmarks[i * 11 + 4] = (T_BBOX) landData[lankmarkId + 4];
+            nmsedLandmarks[i * 11 + 5] = (T_BBOX) landData[lankmarkId + 5];
+            nmsedLandmarks[i * 11 + 6] = (T_BBOX) landData[lankmarkId + 6];
+            nmsedLandmarks[i * 11 + 7] = (T_BBOX) landData[lankmarkId + 7];
+            nmsedLandmarks[i * 11 + 8] = (T_BBOX) landData[lankmarkId + 8];
+            nmsedLandmarks[i * 11 + 9] = (T_BBOX) landData[lankmarkId + 9];
+            nmsedLandmarks[i * 11 + 10] = (T_BBOX) landData[lankmarkId + 10];
             const T_BBOX xMin = bboxData[bboxId];
             const T_BBOX yMin = bboxData[bboxId + 1];
             const T_BBOX xMax = bboxData[bboxId + 2];

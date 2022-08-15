@@ -48,7 +48,7 @@ The boxes input and scores input generates the following four outputs:
   A `[batch_size, keepTopK]` float32 tensor containing the classes for the boxes.
 
 - `nmsed_landmarks`
-  A `[batch_size, keepTopK, 10]` float32 tensor containing the 5 landmarks for the boxes.
+  A `[batch_size, keepTopK, 11]` float32 tensor containing the 5 landmarks for the boxes.
 
 ## Parameters
 

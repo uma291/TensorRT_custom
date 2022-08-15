@@ -175,7 +175,7 @@ Dims BatchedNMSLandmarkConfPlugin::getOutputDimensions(int index, const Dims* in
         // nmsed_landmarks
         if (index == 4)
         {
-            return DimsHW(param.keepTopK, 10);
+            return DimsHW(param.keepTopK, 11);
         }
         // nmsed_scores or nmsed_classes
         Dims dim1{};
@@ -211,8 +211,8 @@ DimsExprs BatchedNMSLandmarkConfDynamicPlugin::getOutputDimensions(
         ASSERT(inputs[1].nbDims == 3 || inputs[1].nbDims == 4);
 
         // Shape of landmarks input should be
-        // Constant shape: [batch_size, num_boxes, num_classes, 10] or [batch_size, num_boxes, 1,
-        // 10]
+        // Constant shape: [batch_size, num_boxes, num_classes, 11] or [batch_size, num_boxes, 1,
+        // 11]
         //           shareLocation ==              0               or          1
         // or
         // Dynamic shape: some dimension values may be -1
@@ -273,7 +273,7 @@ DimsExprs BatchedNMSLandmarkConfDynamicPlugin::getOutputDimensions(
             out_dim.nbDims = 3;
             out_dim.d[0] = inputs[0].d[0];
             out_dim.d[1] = exprBuilder.constant(param.keepTopK);
-            out_dim.d[2] = exprBuilder.constant(10);
+            out_dim.d[2] = exprBuilder.constant(11);
         }
         // nmsed_classes
         else
