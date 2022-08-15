@@ -113,6 +113,7 @@ __launch_bounds__(nthds_per_cta) __global__ void gatherNMSLandmarkConfOutputs_ke
             nmsedLandmarks[i * 10 + 8] = (T_BBOX) landData[lankmarkId + 8];
             nmsedLandmarks[i * 10 + 9] = (T_BBOX) landData[lankmarkId + 9];
             nmsedLandmarksConf[i] = landCcore;
+            nmsedLandmarksConf[i] = minus_fb(nmsedLandmarksConf[i], scoreShift);
             const T_BBOX xMin = bboxData[bboxId];
             const T_BBOX yMin = bboxData[bboxId + 1];
             const T_BBOX xMax = bboxData[bboxId + 2];

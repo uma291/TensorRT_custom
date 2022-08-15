@@ -183,7 +183,8 @@ Dims BatchedNMSLandmarkConfPlugin::getOutputDimensions(int index, const Dims* in
             return DimsHW(param.keepTopK, 10);
         }
         // nmsed_landmarksconf
-        if (index == 5) {
+        if (index == 5)
+        {
             Dims dim1{};
             dim1.nbDims = 1;
             dim1.d[0] = param.keepTopK;
@@ -264,7 +265,7 @@ DimsExprs BatchedNMSLandmarkConfDynamicPlugin::getOutputDimensions(
         if (inputs[3].d[0]->isConstant() && inputs[3].d[1]->isConstant() && inputs[3].d[2]->isConstant())
         {
             landmarksConfSize = exprBuilder.operation(DimensionOperation::kPROD, *inputs[3].d[1], *inputs[3].d[2])
-                             ->getConstantValue();
+                                    ->getConstantValue();
         }
 
         DimsExprs out_dim;
@@ -324,15 +325,15 @@ DimsExprs BatchedNMSLandmarkConfDynamicPlugin::getOutputDimensions(
 
 size_t BatchedNMSLandmarkConfPlugin::getWorkspaceSize(int maxBatchSize) const noexcept
 {
-    return detectionInferenceWorkspaceSize(param.shareLocation, maxBatchSize, boxesSize, scoresSize, landmarksSize, landmarksConfSize,
-        param.numClasses, numPriors, param.topK, mPrecision, mPrecision);
+    return detectionInferenceWorkspaceSize(param.shareLocation, maxBatchSize, boxesSize, scoresSize, landmarksSize,
+        landmarksConfSize, param.numClasses, numPriors, param.topK, mPrecision, mPrecision);
 }
 
 size_t BatchedNMSLandmarkConfDynamicPlugin::getWorkspaceSize(
     const PluginTensorDesc* inputs, int nbInputs, const PluginTensorDesc* outputs, int nbOutputs) const noexcept
 {
     return detectionInferenceWorkspaceSize(param.shareLocation, inputs[0].dims.d[0], boxesSize, scoresSize,
-        landmarksSize,landmarksConfSize, param.numClasses, numPriors, param.topK, mPrecision, mPrecision);
+        landmarksSize, landmarksConfSize, param.numClasses, numPriors, param.topK, mPrecision, mPrecision);
 }
 
 int BatchedNMSLandmarkConfPlugin::enqueue(
@@ -357,7 +358,7 @@ int BatchedNMSLandmarkConfPlugin::enqueue(
         void* nmsedLandmarks = outputs[4];
         void* nmsedLandmarksConf = outputs[4];
 
-        pluginStatus_t status = nmsInference(stream, batchSize, boxesSize, scoresSize, landmarksSize,landmarksConfSize,
+        pluginStatus_t status = nmsInference(stream, batchSize, boxesSize, scoresSize, landmarksSize, landmarksConfSize,
             param.shareLocation, param.backgroundLabelId, numPriors, param.numClasses, param.topK, param.keepTopK,
             param.scoreThreshold, param.iouThreshold, mPrecision, locData, mPrecision, confData, landData, landConf,
             keepCount, nmsedBoxes, nmsedScores, nmsedClasses, nmsedLandmarks, nmsedLandmarksConf, workspace,
@@ -393,11 +394,11 @@ int BatchedNMSLandmarkConfDynamicPlugin::enqueue(const PluginTensorDesc* inputDe
         void* nmsedLandmarks = outputs[4];
         void* nmsedLandmarksConf = outputs[4];
 
-        pluginStatus_t status = nmsInference(stream, inputDesc[0].dims.d[0], boxesSize, scoresSize, landmarksSize,landmarksConfSize,
-            param.shareLocation, param.backgroundLabelId, numPriors, param.numClasses, param.topK, param.keepTopK,
-            param.scoreThreshold, param.iouThreshold, mPrecision, locData, mPrecision, confData, landData, landConf,
-            keepCount, nmsedBoxes, nmsedScores, nmsedClasses, nmsedLandmarks, nmsedLandmarksConf, workspace,
-            param.isNormalized, false, mClipBoxes, mScoreBits, mCaffeSemantics);
+        pluginStatus_t status = nmsInference(stream, inputDesc[0].dims.d[0], boxesSize, scoresSize, landmarksSize,
+            landmarksConfSize, param.shareLocation, param.backgroundLabelId, numPriors, param.numClasses, param.topK,
+            param.keepTopK, param.scoreThreshold, param.iouThreshold, mPrecision, locData, mPrecision, confData,
+            landData, landConf, keepCount, nmsedBoxes, nmsedScores, nmsedClasses, nmsedLandmarks, nmsedLandmarksConf,
+            workspace, param.isNormalized, false, mClipBoxes, mScoreBits, mCaffeSemantics);
         return status;
     }
     catch (const std::exception& e)
@@ -781,7 +782,8 @@ const PluginFieldCollection* BatchedNMSLandmarkConfBasePluginCreator::getFieldNa
     return &mFC;
 }
 
-IPluginV2Ext* BatchedNMSLandmarkConfPluginCreator::createPlugin(const char* name, const PluginFieldCollection* fc) noexcept
+IPluginV2Ext* BatchedNMSLandmarkConfPluginCreator::createPlugin(
+    const char* name, const PluginFieldCollection* fc) noexcept
 {
     try
     {
