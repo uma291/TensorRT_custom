@@ -15,13 +15,13 @@
  */
 #ifndef TRT_BATCHED_NMS_LANDMARK_CONF_PLUGIN_H
 #define TRT_BATCHED_NMS_LANDMARK_CONF_PLUGIN_H
-#include <string>
-#include <vector>
 
 #include "gatherNMSLandmarkConfOutputs.h"
 #include "kernel.h"
 #include "nmsUtils.h"
 #include "plugin.h"
+#include <string>
+#include <vector>
 
 using namespace nvinfer1::plugin;
 namespace nvinfer1
@@ -72,6 +72,7 @@ private:
     int boxesSize{};
     int scoresSize{};
     int landmarksSize{};
+    int landmarksConfSize{};
     int numPriors{};
     std::string mNamespace;
     bool mClipBoxes{};
@@ -125,6 +126,7 @@ private:
     int boxesSize{};
     int scoresSize{};
     int landmarksSize{};
+    int landmarksConfSize{};
     int numPriors{};
     std::string mNamespace;
     bool mClipBoxes{};

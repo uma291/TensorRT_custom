@@ -55,11 +55,11 @@ inline __device__ __half saturate(__half v)
 }
 
 template <typename T_BBOX, typename T_SCORE, unsigned nthds_per_cta>
-__launch_bounds__(nthds_per_cta) __global__ void gatherNMSLandmarkConfOutputs_kernel(const bool shareLocation,
-    const int numImages, const int numPredsPerClass, const int numClasses, const int topK, const int keepTopK,
-    const int* indices, const T_SCORE* scores, const T_BBOX* bboxData, const T_BBOX* landData, const T_SCORE* landConf,
-    int* numDetections, T_BBOX* nmsedBoxes, T_BBOX* nmsedScores, T_BBOX* nmsedClasses, T_BBOX* nmsedLandmarks,
-    T_BBOX* nmsedLandmarksConf, bool clipBoxes, const T_SCORE scoreShift)
+__launch_bounds__(nthds_per_cta) __global__
+    void gatherNMSLandmarkConfOutputs_kernel(const bool shareLocation, const int numImages, const int numPredsPerClass,
+        const int numClasses, const int topK, const int keepTopK, const int* indices, const T_SCORE* scores,
+        const T_BBOX* bboxData, const T_BBOX* landData, int* numDetections, T_BBOX* nmsedBoxes, T_BBOX* nmsedScores,
+        T_BBOX* nmsedClasses, T_BBOX* nmsedLandmarks, bool clipBoxes, const T_SCORE scoreShift)
 {
     if (keepTopK > topK)
         return;
@@ -70,7 +70,6 @@ __launch_bounds__(nthds_per_cta) __global__ void gatherNMSLandmarkConfOutputs_ke
         const int offset = imgId * numClasses * topK;
         const int index = indices[offset + detId];
         const T_SCORE score = scores[offset + detId];
-        const T_SCORE landCcore = landConf[offset + detId];
         if (index == -1)
         {
             nmsedClasses[i] = -1;
@@ -89,7 +88,6 @@ __launch_bounds__(nthds_per_cta) __global__ void gatherNMSLandmarkConfOutputs_ke
             nmsedLandmarks[i * 10 + 7] = 0;
             nmsedLandmarks[i * 10 + 8] = 0;
             nmsedLandmarks[i * 10 + 9] = 0;
-            nmsedLandmarksConf[i] = 0;
         }
         else
         {
@@ -112,8 +110,6 @@ __launch_bounds__(nthds_per_cta) __global__ void gatherNMSLandmarkConfOutputs_ke
             nmsedLandmarks[i * 10 + 7] = (T_BBOX) landData[lankmarkId + 7];
             nmsedLandmarks[i * 10 + 8] = (T_BBOX) landData[lankmarkId + 8];
             nmsedLandmarks[i * 10 + 9] = (T_BBOX) landData[lankmarkId + 9];
-            nmsedLandmarksConf[i] = landCcore;
-            nmsedLandmarksConf[i] = minus_fb(nmsedLandmarksConf[i], scoreShift);
             const T_BBOX xMin = bboxData[bboxId];
             const T_BBOX yMin = bboxData[bboxId + 1];
             const T_BBOX xMax = bboxData[bboxId + 2];
@@ -134,17 +130,16 @@ __launch_bounds__(nthds_per_cta) __global__ void gatherNMSLandmarkConfOutputs_ke
 template <typename T_BBOX, typename T_SCORE>
 pluginStatus_t gatherNMSLandmarkConfOutputs_gpu(cudaStream_t stream, const bool shareLocation, const int numImages,
     const int numPredsPerClass, const int numClasses, const int topK, const int keepTopK, const void* indices,
-    const void* scores, const void* bboxData, const void* landData, const void* landConf, void* numDetections,
-    void* nmsedBoxes, void* nmsedScores, void* nmsedClasses, void* nmsedLandmarks, void* nmsedLandmarksConf,
-    bool clipBoxes, const float scoreShift)
+    const void* scores, const void* bboxData, const void* landData, void* numDetections, void* nmsedBoxes,
+    void* nmsedScores, void* nmsedClasses, void* nmsedLandmarks, bool clipBoxes, const float scoreShift)
 {
     cudaMemsetAsync(numDetections, 0, numImages * sizeof(int), stream);
     const int BS = 32;
     const int GS = 32;
     gatherNMSLandmarkConfOutputs_kernel<T_BBOX, T_SCORE, BS><<<GS, BS, 0, stream>>>(shareLocation, numImages,
         numPredsPerClass, numClasses, topK, keepTopK, (int*) indices, (T_SCORE*) scores, (T_BBOX*) bboxData,
-        (T_BBOX*) landData, (T_SCORE*) landConf, (int*) numDetections, (T_BBOX*) nmsedBoxes, (T_BBOX*) nmsedScores,
-        (T_BBOX*) nmsedClasses, (T_BBOX*) nmsedLandmarks, (T_BBOX*) nmsedLandmarksConf, clipBoxes, T_SCORE(scoreShift));
+        (T_BBOX*) landData, (int*) numDetections, (T_BBOX*) nmsedBoxes, (T_BBOX*) nmsedScores, (T_BBOX*) nmsedClasses,
+        (T_BBOX*) nmsedLandmarks, clipBoxes, T_SCORE(scoreShift));
 
     CSC(cudaGetLastError(), STATUS_FAILURE);
     return STATUS_SUCCESS;
@@ -152,8 +147,7 @@ pluginStatus_t gatherNMSLandmarkConfOutputs_gpu(cudaStream_t stream, const bool 
 
 // gatherNMSLandmarkConfOutputs LAUNCH CONFIG {{{
 typedef pluginStatus_t (*nmsOutFunc)(cudaStream_t, const bool, const int, const int, const int, const int, const int,
-    const void*, const void*, const void*, const void*, const void*, void*, void*, void*, void*, void*, void*, bool,
-    const float);
+    const void*, const void*, const void*, const void*, void*, void*, void*, void*, void*, bool, const float);
 struct nmsOutLaunchConfig
 {
     DataType t_bbox;
@@ -186,8 +180,8 @@ static std::array<nmsOutLaunchConfig, 2> nmsOutLCOptions
 pluginStatus_t gatherNMSLandmarkConfOutputs(cudaStream_t stream, const bool shareLocation, const int numImages,
     const int numPredsPerClass, const int numClasses, const int topK, const int keepTopK, const DataType DT_BBOX,
     const DataType DT_SCORE, const void* indices, const void* scores, const void* bboxData, const void* landData,
-    const void* landConf, void* numDetections, void* nmsedBoxes, void* nmsedScores, void* nmsedClasses,
-    void* nmsedLandmarks, void* nmsedLandmarksConf, bool clipBoxes, const float scoreShift)
+    void* numDetections, void* nmsedBoxes, void* nmsedScores, void* nmsedClasses, void* nmsedLandmarks, bool clipBoxes,
+    const float scoreShift)
 {
     nmsOutLaunchConfig lc = nmsOutLaunchConfig(DT_BBOX, DT_SCORE);
     for (unsigned i = 0; i < nmsOutLCOptions.size(); ++i)
@@ -196,8 +190,8 @@ pluginStatus_t gatherNMSLandmarkConfOutputs(cudaStream_t stream, const bool shar
         {
             DEBUG_PRINTF("gatherNMSLandmarkConfOutputs kernel %d\n", i);
             return nmsOutLCOptions[i].function(stream, shareLocation, numImages, numPredsPerClass, numClasses, topK,
-                keepTopK, indices, scores, bboxData, landData, landConf, numDetections, nmsedBoxes, nmsedScores,
-                nmsedClasses, nmsedLandmarks, nmsedLandmarksConf, clipBoxes, scoreShift);
+                keepTopK, indices, scores, bboxData, landData, numDetections, nmsedBoxes, nmsedScores, nmsedClasses,
+                nmsedLandmarks, clipBoxes, scoreShift);
         }
     }
     return STATUS_BAD_PARAM;

@@ -21,8 +21,8 @@ using namespace nvinfer1::plugin;
 
 pluginStatus_t gatherNMSLandmarkConfOutputs(cudaStream_t stream, bool shareLocation, int numImages,
     int numPredsPerClass, int numClasses, int topK, int keepTopK, DataType DT_BBOX, DataType DT_SCORE,
-    const void* indices, const void* scores, const void* bboxData, const void* landData, const void* landConf,
-    void* keepCount, void* nmsedBoxes, void* nmsedScores, void* nmsedClasses, void* nmsedLandmarks,
-    void* nmsedLandmarksConf, bool clipBoxes, const float scoreShift);
+    const void* indices, const void* scores, const void* bboxData, const void* landData, void* keepCount,
+    void* nmsedBoxes, void* nmsedScores, void* nmsedClasses, void* nmsedLandmarks, bool clipBoxes,
+    const float scoreShift);
 
 #endif

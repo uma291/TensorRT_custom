@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "BatchedNMSLandmarkConfPlugin.h"
+#include "batchedNMSLandmarkConfPlugin.h"
 
 #include <algorithm>
 #include <cstring>
@@ -88,6 +88,7 @@ BatchedNMSLandmarkConfPlugin::BatchedNMSLandmarkConfPlugin(const void* data, siz
     boxesSize = read<int>(d);
     scoresSize = read<int>(d);
     landmarksSize = read<int>(d);
+    landmarksConfSize = read<int>(d);
     numPriors = read<int>(d);
     mClipBoxes = read<bool>(d);
     mPrecision = read<DataType>(d);
@@ -111,6 +112,7 @@ BatchedNMSLandmarkConfDynamicPlugin::BatchedNMSLandmarkConfDynamicPlugin(const v
     boxesSize = read<int>(d);
     scoresSize = read<int>(d);
     landmarksSize = read<int>(d);
+    landmarksConfSize = read<int>(d);
     numPriors = read<int>(d);
     mClipBoxes = read<bool>(d);
     mPrecision = read<DataType>(d);
@@ -123,12 +125,12 @@ BatchedNMSLandmarkConfDynamicPlugin::BatchedNMSLandmarkConfDynamicPlugin(const v
 
 int BatchedNMSLandmarkConfPlugin::getNbOutputs() const noexcept
 {
-    return 5;
+    return 6;
 }
 
 int BatchedNMSLandmarkConfDynamicPlugin::getNbOutputs() const noexcept
 {
-    return 5;
+    return 6;
 }
 
 int BatchedNMSLandmarkConfPlugin::initialize() noexcept
@@ -149,17 +151,20 @@ Dims BatchedNMSLandmarkConfPlugin::getOutputDimensions(int index, const Dims* in
 {
     try
     {
-        ASSERT(nbInputDims == 3);
+        ASSERT(nbInputDims == 4);
         ASSERT(index >= 0 && index < this->getNbOutputs());
         ASSERT(inputs[0].nbDims == 3);
         ASSERT(inputs[1].nbDims == 2 || (inputs[1].nbDims == 3 && inputs[1].d[2] == 1));
         ASSERT(inputs[2].nbDims == 3);
+        ASSERT(inputs[3].nbDims == 2 || (inputs[3].nbDims == 3 && inputs[2].d[2] == 1));
         // boxesSize: number of box coordinates for one sample
         boxesSize = inputs[0].d[0] * inputs[0].d[1] * inputs[0].d[2];
         // scoresSize: number of scores for one sample
         scoresSize = inputs[1].d[0] * inputs[1].d[1];
         // landmarksSize: number of landmark coordinates for one sample
         landmarksSize = inputs[2].d[0] * inputs[2].d[1] * inputs[2].d[2];
+        // landmarksConfSize: number of landmark conf for one sample
+        landmarksConfSize = inputs[3].d[0] * inputs[3].d[1];
         // num_detections
         if (index == 0)
         {
@@ -176,6 +181,14 @@ Dims BatchedNMSLandmarkConfPlugin::getOutputDimensions(int index, const Dims* in
         if (index == 4)
         {
             return DimsHW(param.keepTopK, 10);
+        }
+        // nmsed_landmarksconf
+        if (index == 5)
+        {
+            Dims dim1{};
+            dim1.nbDims = 1;
+            dim1.d[0] = param.keepTopK;
+            return dim1;
         }
         // nmsed_scores or nmsed_classes
         Dims dim1{};
@@ -195,7 +208,7 @@ DimsExprs BatchedNMSLandmarkConfDynamicPlugin::getOutputDimensions(
 {
     try
     {
-        ASSERT(nbInputs == 3);
+        ASSERT(nbInputs == 4);
         ASSERT(outputIndex >= 0 && outputIndex < this->getNbOutputs());
 
         // Shape of boxes input should be
@@ -217,6 +230,11 @@ DimsExprs BatchedNMSLandmarkConfDynamicPlugin::getOutputDimensions(
         // or
         // Dynamic shape: some dimension values may be -1
         ASSERT(inputs[2].nbDims == 4);
+
+        // Shape of landmarks scores input should be
+        // Constant shape: [batch_size, num_boxes, num_classes] or [batch_size, num_boxes,
+        // num_classes, 1] or Dynamic shape: some dimension values may be -1
+        ASSERT(inputs[3].nbDims == 3 || inputs[3].nbDims == 4);
 
         if (inputs[0].d[0]->isConstant() && inputs[0].d[1]->isConstant() && inputs[0].d[2]->isConstant()
             && inputs[0].d[3]->isConstant())
@@ -242,6 +260,12 @@ DimsExprs BatchedNMSLandmarkConfDynamicPlugin::getOutputDimensions(
                                     *exprBuilder.operation(DimensionOperation::kPROD, *inputs[2].d[1], *inputs[2].d[2]),
                                     *inputs[2].d[3])
                                 ->getConstantValue();
+        }
+
+        if (inputs[3].d[0]->isConstant() && inputs[3].d[1]->isConstant() && inputs[3].d[2]->isConstant())
+        {
+            landmarksConfSize = exprBuilder.operation(DimensionOperation::kPROD, *inputs[3].d[1], *inputs[3].d[2])
+                                    ->getConstantValue();
         }
 
         DimsExprs out_dim;
@@ -275,6 +299,13 @@ DimsExprs BatchedNMSLandmarkConfDynamicPlugin::getOutputDimensions(
             out_dim.d[1] = exprBuilder.constant(param.keepTopK);
             out_dim.d[2] = exprBuilder.constant(10);
         }
+        // nmsed_landmarks
+        else if (outputIndex == 5)
+        {
+            out_dim.nbDims = 2;
+            out_dim.d[0] = inputs[0].d[0];
+            out_dim.d[1] = exprBuilder.constant(param.keepTopK);
+        }
         // nmsed_classes
         else
         {
@@ -295,14 +326,14 @@ DimsExprs BatchedNMSLandmarkConfDynamicPlugin::getOutputDimensions(
 size_t BatchedNMSLandmarkConfPlugin::getWorkspaceSize(int maxBatchSize) const noexcept
 {
     return detectionInferenceWorkspaceSize(param.shareLocation, maxBatchSize, boxesSize, scoresSize, landmarksSize,
-        param.numClasses, numPriors, param.topK, mPrecision, mPrecision);
+        landmarksConfSize, param.numClasses, numPriors, param.topK, mPrecision, mPrecision);
 }
 
 size_t BatchedNMSLandmarkConfDynamicPlugin::getWorkspaceSize(
     const PluginTensorDesc* inputs, int nbInputs, const PluginTensorDesc* outputs, int nbOutputs) const noexcept
 {
     return detectionInferenceWorkspaceSize(param.shareLocation, inputs[0].dims.d[0], boxesSize, scoresSize,
-        landmarksSize, param.numClasses, numPriors, param.topK, mPrecision, mPrecision);
+        landmarksSize, landmarksConfSize, param.numClasses, numPriors, param.topK, mPrecision, mPrecision);
 }
 
 int BatchedNMSLandmarkConfPlugin::enqueue(
@@ -313,6 +344,7 @@ int BatchedNMSLandmarkConfPlugin::enqueue(
         const void* const locData = inputs[0];
         const void* const confData = inputs[1];
         const void* const landData = inputs[2];
+        const void* const landConf = inputs[3];
 
         if (mPluginStatus != STATUS_SUCCESS)
         {
@@ -324,12 +356,13 @@ int BatchedNMSLandmarkConfPlugin::enqueue(
         void* nmsedScores = outputs[2];
         void* nmsedClasses = outputs[3];
         void* nmsedLandmarks = outputs[4];
+        void* nmsedLandmarksConf = outputs[4];
 
-        pluginStatus_t status = nmsInference(stream, batchSize, boxesSize, scoresSize, landmarksSize,
+        pluginStatus_t status = nmsInference(stream, batchSize, boxesSize, scoresSize, landmarksSize, landmarksConfSize,
             param.shareLocation, param.backgroundLabelId, numPriors, param.numClasses, param.topK, param.keepTopK,
-            param.scoreThreshold, param.iouThreshold, mPrecision, locData, mPrecision, confData, landData, keepCount,
-            nmsedBoxes, nmsedScores, nmsedClasses, nmsedLandmarks, workspace, param.isNormalized, false, mClipBoxes,
-            mScoreBits, mCaffeSemantics);
+            param.scoreThreshold, param.iouThreshold, mPrecision, locData, mPrecision, confData, landData, landConf,
+            keepCount, nmsedBoxes, nmsedScores, nmsedClasses, nmsedLandmarks, nmsedLandmarksConf, workspace,
+            param.isNormalized, false, mClipBoxes, mScoreBits, mCaffeSemantics);
         return status == STATUS_SUCCESS ? 0 : -1;
     }
     catch (const std::exception& e)
@@ -347,6 +380,7 @@ int BatchedNMSLandmarkConfDynamicPlugin::enqueue(const PluginTensorDesc* inputDe
         const void* const locData = inputs[0];
         const void* const confData = inputs[1];
         const void* const landData = inputs[2];
+        const void* const landConf = inputs[2];
 
         if (mPluginStatus != STATUS_SUCCESS)
         {
@@ -358,12 +392,13 @@ int BatchedNMSLandmarkConfDynamicPlugin::enqueue(const PluginTensorDesc* inputDe
         void* nmsedScores = outputs[2];
         void* nmsedClasses = outputs[3];
         void* nmsedLandmarks = outputs[4];
+        void* nmsedLandmarksConf = outputs[4];
 
         pluginStatus_t status = nmsInference(stream, inputDesc[0].dims.d[0], boxesSize, scoresSize, landmarksSize,
-            param.shareLocation, param.backgroundLabelId, numPriors, param.numClasses, param.topK, param.keepTopK,
-            param.scoreThreshold, param.iouThreshold, mPrecision, locData, mPrecision, confData, landData, keepCount,
-            nmsedBoxes, nmsedScores, nmsedClasses, nmsedLandmarks, workspace, param.isNormalized, false, mClipBoxes,
-            mScoreBits, mCaffeSemantics);
+            landmarksConfSize, param.shareLocation, param.backgroundLabelId, numPriors, param.numClasses, param.topK,
+            param.keepTopK, param.scoreThreshold, param.iouThreshold, mPrecision, locData, mPrecision, confData,
+            landData, landConf, keepCount, nmsedBoxes, nmsedScores, nmsedClasses, nmsedLandmarks, nmsedLandmarksConf,
+            workspace, param.isNormalized, false, mClipBoxes, mScoreBits, mCaffeSemantics);
         return status;
     }
     catch (const std::exception& e)
@@ -375,8 +410,8 @@ int BatchedNMSLandmarkConfDynamicPlugin::enqueue(const PluginTensorDesc* inputDe
 
 size_t BatchedNMSLandmarkConfPlugin::getSerializationSize() const noexcept
 {
-    // NMSParameters, boxesSize,scoresSize,landmarksSize,numPriors
-    return sizeof(NMSParameters) + sizeof(int) * 4 + sizeof(bool) * 2 + sizeof(DataType) + sizeof(int32_t);
+    // NMSParameters, boxesSize,scoresSize,landmarksSize,landmarksConfSize,numPriors
+    return sizeof(NMSParameters) + sizeof(int) * 5 + sizeof(bool) * 2 + sizeof(DataType) + sizeof(int32_t);
 }
 
 void BatchedNMSLandmarkConfPlugin::serialize(void* buffer) const noexcept
@@ -386,6 +421,7 @@ void BatchedNMSLandmarkConfPlugin::serialize(void* buffer) const noexcept
     write(d, boxesSize);
     write(d, scoresSize);
     write(d, landmarksSize);
+    write(d, landmarksConfSize);
     write(d, numPriors);
     write(d, mClipBoxes);
     write(d, mPrecision);
@@ -396,8 +432,8 @@ void BatchedNMSLandmarkConfPlugin::serialize(void* buffer) const noexcept
 
 size_t BatchedNMSLandmarkConfDynamicPlugin::getSerializationSize() const noexcept
 {
-    // NMSParameters, boxesSize,scoresSize,landmarksSize,numPriors
-    return sizeof(NMSParameters) + sizeof(int) * 4 + sizeof(bool) * 2 + sizeof(DataType) + sizeof(int32_t);
+    // NMSParameters, boxesSize,scoresSize,landmarksSize,landmarksConfSize,numPriors
+    return sizeof(NMSParameters) + sizeof(int) * 5 + sizeof(bool) * 2 + sizeof(DataType) + sizeof(int32_t);
 }
 
 void BatchedNMSLandmarkConfDynamicPlugin::serialize(void* buffer) const noexcept
@@ -407,6 +443,7 @@ void BatchedNMSLandmarkConfDynamicPlugin::serialize(void* buffer) const noexcept
     write(d, boxesSize);
     write(d, scoresSize);
     write(d, landmarksSize);
+    write(d, landmarksConfSize);
     write(d, numPriors);
     write(d, mClipBoxes);
     write(d, mPrecision);
@@ -421,8 +458,8 @@ void BatchedNMSLandmarkConfPlugin::configurePlugin(const Dims* inputDims, int nb
 {
     try
     {
-        ASSERT(nbInputs == 3);
-        ASSERT(nbOutputs == 5);
+        ASSERT(nbInputs == 4);
+        ASSERT(nbOutputs == 6);
         ASSERT(inputDims[0].nbDims == 3);
         ASSERT(inputDims[1].nbDims == 2 || (inputDims[1].nbDims == 3 && inputDims[1].d[2] == 1));
         ASSERT(std::none_of(inputIsBroadcast, inputIsBroadcast + nbInputs, [](bool b) { return b; }));
@@ -431,6 +468,7 @@ void BatchedNMSLandmarkConfPlugin::configurePlugin(const Dims* inputDims, int nb
         boxesSize = inputDims[0].d[0] * inputDims[0].d[1] * inputDims[0].d[2];
         scoresSize = inputDims[1].d[0] * inputDims[1].d[1];
         landmarksSize = inputDims[2].d[0] * inputDims[2].d[1] * inputDims[2].d[2];
+        landmarksConfSize = inputDims[3].d[0] * inputDims[3].d[1];
         // num_boxes
         numPriors = inputDims[0].d[0];
         const int numLocClasses = param.shareLocation ? 1 : param.numClasses;
@@ -450,8 +488,8 @@ void BatchedNMSLandmarkConfDynamicPlugin::configurePlugin(
 {
     try
     {
-        ASSERT(nbInputs == 3);
-        ASSERT(nbOutputs == 5);
+        ASSERT(nbInputs == 4);
+        ASSERT(nbOutputs == 6);
 
         // Shape of boxes input should be
         // Constant shape: [batch_size, num_boxes, num_classes, 4] or [batch_size, num_boxes, 1, 4]
@@ -462,13 +500,13 @@ void BatchedNMSLandmarkConfDynamicPlugin::configurePlugin(
         ASSERT(in[0].desc.dims.d[3] == 4);
 
         // Shape of scores input should be
-        // Constant shape: [batch_size, num_boxes, num_classes] or [batch_size, num_boxes,
-        // num_classes, 1]
+        // Constant shape: [batch_size, num_boxes, num_classes] or [batch_size, num_boxes, num_classes, 1]
         ASSERT(in[1].desc.dims.nbDims == 3 || (in[1].desc.dims.nbDims == 4 && in[1].desc.dims.d[3] == 1));
 
         boxesSize = in[0].desc.dims.d[1] * in[0].desc.dims.d[2] * in[0].desc.dims.d[3];
         scoresSize = in[1].desc.dims.d[1] * in[1].desc.dims.d[2];
         landmarksSize = in[2].desc.dims.d[1] * in[2].desc.dims.d[2] * in[2].desc.dims.d[3];
+        landmarksConfSize = in[3].desc.dims.d[1] * in[3].desc.dims.d[2];
         // num_boxes
         numPriors = in[0].desc.dims.d[1];
 
@@ -493,9 +531,9 @@ bool BatchedNMSLandmarkConfPlugin::supportsFormat(DataType type, PluginFormat fo
 bool BatchedNMSLandmarkConfDynamicPlugin::supportsFormatCombination(
     int pos, const PluginTensorDesc* inOut, int nbInputs, int nbOutputs) noexcept
 {
-    ASSERT(nbInputs <= 3 && nbInputs >= 0);
-    ASSERT(nbOutputs <= 5 && nbOutputs >= 0);
-    ASSERT(pos < 8 && pos >= 0);
+    ASSERT(nbInputs <= 4 && nbInputs >= 0);
+    ASSERT(nbOutputs <= 6 && nbOutputs >= 0);
+    ASSERT(pos < 10 && pos >= 0);
     const auto* in = inOut;
     const auto* out = inOut + nbInputs;
     const bool consistentFloatPrecision = in[0].type == in[pos].type;
@@ -510,19 +548,25 @@ bool BatchedNMSLandmarkConfDynamicPlugin::supportsFormatCombination(
     case 2:
         return (in[2].type == DataType::kHALF || in[2].type == DataType::kFLOAT)
             && in[2].format == PluginFormat::kLINEAR && consistentFloatPrecision;
-    case 3: return out[0].type == DataType::kINT32 && out[0].format == PluginFormat::kLINEAR;
-    case 4:
+    case 3:
+        return (in[3].type == DataType::kHALF || in[3].type == DataType::kFLOAT)
+            && in[3].format == PluginFormat::kLINEAR && consistentFloatPrecision;
+    case 4: return out[0].type == DataType::kINT32 && out[0].format == PluginFormat::kLINEAR;
+    case 5:
         return (out[1].type == DataType::kHALF || out[1].type == DataType::kFLOAT)
             && out[1].format == PluginFormat::kLINEAR && consistentFloatPrecision;
-    case 5:
+    case 6:
         return (out[2].type == DataType::kHALF || out[2].type == DataType::kFLOAT)
             && out[2].format == PluginFormat::kLINEAR && consistentFloatPrecision;
-    case 6:
+    case 7:
         return (out[3].type == DataType::kHALF || out[3].type == DataType::kFLOAT)
             && out[3].format == PluginFormat::kLINEAR && consistentFloatPrecision;
-    case 7:
+    case 8:
         return (out[4].type == DataType::kHALF || out[4].type == DataType::kFLOAT)
             && out[4].format == PluginFormat::kLINEAR && consistentFloatPrecision;
+    case 9:
+        return (out[5].type == DataType::kHALF || out[5].type == DataType::kFLOAT)
+            && out[5].format == PluginFormat::kLINEAR && consistentFloatPrecision;
     }
     return false;
 }
@@ -565,6 +609,7 @@ IPluginV2Ext* BatchedNMSLandmarkConfPlugin::clone() const noexcept
         plugin->boxesSize = boxesSize;
         plugin->scoresSize = scoresSize;
         plugin->landmarksSize = landmarksSize;
+        plugin->landmarksConfSize = landmarksConfSize;
         plugin->numPriors = numPriors;
         plugin->setPluginNamespace(mNamespace.c_str());
         plugin->setClipParam(mClipBoxes);
@@ -588,6 +633,7 @@ IPluginV2DynamicExt* BatchedNMSLandmarkConfDynamicPlugin::clone() const noexcept
         plugin->boxesSize = boxesSize;
         plugin->scoresSize = scoresSize;
         plugin->landmarksSize = landmarksSize;
+        plugin->landmarksConfSize = landmarksConfSize;
         plugin->numPriors = numPriors;
         plugin->setPluginNamespace(mNamespace.c_str());
         plugin->setClipParam(mClipBoxes);

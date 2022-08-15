@@ -20,12 +20,11 @@
 #include "nmsUtils.h"
 
 pluginStatus_t nmsInference(cudaStream_t stream, const int N, const int perBatchBoxesSize, const int perBatchScoresSize,
-    const int perBatchLandmarksSize, const int perBatchLandmarksConfksSize, const bool shareLocation,
-    const int backgroundLabelId, const int numPredsPerClass, const int numClasses, const int topK, const int keepTopK,
-    const float scoreThreshold, const float iouThreshold, const DataType DT_BBOX, const void* locData,
-    const DataType DT_SCORE, const void* confData, const void* landData, const void* landConf, void* keepCount,
-    void* nmsedBoxes, void* nmsedScores, void* nmsedClasses, void* nmsedLandmarks, void* nmsedLandmarksConf,
-    void* workspace, bool isNormalized, bool confSigmoid, bool clipBoxes, int scoreBits, bool caffeSemantics)
+    const int perBatchLandmarksSize, const bool shareLocation, const int backgroundLabelId, const int numPredsPerClass,
+    const int numClasses, const int topK, const int keepTopK, const float scoreThreshold, const float iouThreshold,
+    const DataType DT_BBOX, const void* locData, const DataType DT_SCORE, const void* confData, const void* landData,
+    void* keepCount, void* nmsedBoxes, void* nmsedScores, void* nmsedClasses, void* nmsedLandmarks, void* workspace,
+    bool isNormalized, bool confSigmoid, bool clipBoxes, int scoreBits, bool caffeSemantics)
 {
     // locCount = batch_size * number_boxes_per_sample * 4
     const int locCount = N * perBatchBoxesSize;
@@ -127,8 +126,8 @@ pluginStatus_t nmsInference(cudaStream_t stream, const int N, const int perBatch
 
     // Gather data from the sorted bounding boxes after NMS
     status = gatherNMSLandmarkConfOutputs(stream, shareLocation, N, numPredsPerClass, numClasses, topK, keepTopK,
-        DT_BBOX, DT_SCORE, indices, scores, bboxData, landData, landConf, keepCount, nmsedBoxes, nmsedScores,
-        nmsedClasses, nmsedLandmarks, nmsedLandmarksConf, clipBoxes, scoreShift);
+        DT_BBOX, DT_SCORE, indices, scores, bboxData, landData, keepCount, nmsedBoxes, nmsedScores, nmsedClasses,
+        nmsedLandmarks, clipBoxes, scoreShift);
     ASSERT_FAILURE(status == STATUS_SUCCESS);
 
     return STATUS_SUCCESS;
