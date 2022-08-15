@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "BatchedNMSLandmarkConfPlugin.h"
+#include "batchedNMSLandmarkConfPlugin.h"
 
 #include <algorithm>
 #include <cstring>
