@@ -24,13 +24,13 @@ using namespace nvinfer1::plugin;
 size_t detectionInferenceWorkspaceSize(bool shareLocation, int N, int C1, int C2, int numClasses, int numPredsPerClass,
     int topK, DataType DT_BBOX, DataType DT_SCORE);
 
-size_t detectionInferenceWorkspaceSize(bool shareLocation, int N, int C1,
+size_t detectionInferenceLandmarkWorkspaceSize(bool shareLocation, int N, int C1,
                                        int C2, int C3, int numClasses,
                                        int numPredsPerClass, int topK,
                                        nvinfer1::DataType DT_BBOX,
                                        nvinfer1::DataType DT_SCORE);
 
-size_t detectionInferenceWorkspaceSize(bool shareLocation, int N, int C1,
+size_t detectionInferenceLandmarkConfWorkspaceSize(bool shareLocation, int N, int C1,
                                        int C2, int C3, int C4, int numClasses,
                                        int numPredsPerClass, int topK,
                                        nvinfer1::DataType DT_BBOX,

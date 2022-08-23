@@ -294,14 +294,14 @@ DimsExprs BatchedNMSLandmarkConfDynamicPlugin::getOutputDimensions(
 
 size_t BatchedNMSLandmarkConfPlugin::getWorkspaceSize(int maxBatchSize) const noexcept
 {
-    return detectionInferenceWorkspaceSize(param.shareLocation, maxBatchSize, boxesSize, scoresSize, landmarksSize,
+    return detectionInferenceLandmarkWorkspaceSize(param.shareLocation, maxBatchSize, boxesSize, scoresSize, landmarksSize,
         param.numClasses, numPriors, param.topK, mPrecision, mPrecision);
 }
 
 size_t BatchedNMSLandmarkConfDynamicPlugin::getWorkspaceSize(
     const PluginTensorDesc* inputs, int nbInputs, const PluginTensorDesc* outputs, int nbOutputs) const noexcept
 {
-    return detectionInferenceWorkspaceSize(param.shareLocation, inputs[0].dims.d[0], boxesSize, scoresSize,
+    return detectionInferenceLandmarkWorkspaceSize(param.shareLocation, inputs[0].dims.d[0], boxesSize, scoresSize,
         landmarksSize, param.numClasses, numPriors, param.topK, mPrecision, mPrecision);
 }
 
