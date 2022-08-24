@@ -61,6 +61,7 @@ using namespace nvinfer1::plugin;
 #include "specialSlicePlugin.h"
 #include "split.h"
 #include "voxelGenerator.h"
+#include "roIAlignPlugin.h"
 
 using nvinfer1::plugin::RPROIParams;
 
@@ -211,6 +212,7 @@ extern "C"
         initializePlugin<nvinfer1::plugin::SpecialSlicePluginCreator>(logger, libNamespace);
         initializePlugin<nvinfer1::plugin::SplitPluginCreator>(logger, libNamespace);
         initializePlugin<nvinfer1::plugin::VoxelGeneratorPluginCreator>(logger, libNamespace);
+        initializePlugin<nvinfer1::plugin::RoIAlignDynamicPluginCreator>(logger, libNamespace);
         return true;
     }
 } // extern "C"
