@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef TRT_BATCHED_NMS_HELPER_H
-#define TRT_BATCHED_NMS_HELPER_H
+#ifndef TRT_BATCHED_NMS_LANDMARK_HELPER_H
+#define TRT_BATCHED_NMS_LANDMARK_HELPER_H
 #include "plugin.h"
 using namespace nvinfer1;
 using namespace nvinfer1::plugin;
