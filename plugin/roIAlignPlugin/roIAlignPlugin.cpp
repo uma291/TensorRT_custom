@@ -286,12 +286,12 @@ RoIAlignBasePluginCreator::RoIAlignBasePluginCreator() noexcept
 {
     mPluginAttributes.clear();
 
-    mPluginAttributes.emplace_back(PluginField("mOutWidth", nullptr, PluginFieldType::kINT32, 1));
-    mPluginAttributes.emplace_back(PluginField("mOutHeight", nullptr, PluginFieldType::kINT32, 1));
-    mPluginAttributes.emplace_back(PluginField("mSpatialScale", nullptr, PluginFieldType::kFLOAT32, 1));
-    mPluginAttributes.emplace_back(PluginField("mSampleRatio", nullptr, PluginFieldType::kINT32, 1));
-    mPluginAttributes.emplace_back(PluginField("mPoolMode", nullptr, PluginFieldType::kINT32, 1));
-    mPluginAttributes.emplace_back(PluginField("mAligned", nullptr, PluginFieldType::kINT32, 1));
+    mPluginAttributes.emplace_back(PluginField("output_width", nullptr, PluginFieldType::kINT32, 1));
+    mPluginAttributes.emplace_back(PluginField("output_height", nullptr, PluginFieldType::kINT32, 1));
+    mPluginAttributes.emplace_back(PluginField("spatial_scale", nullptr, PluginFieldType::kFLOAT32, 1));
+    mPluginAttributes.emplace_back(PluginField("sampling_ratio", nullptr, PluginFieldType::kINT32, 1));
+    mPluginAttributes.emplace_back(PluginField("mode", nullptr, PluginFieldType::kINT32, 1));
+    mPluginAttributes.emplace_back(PluginField("aligned", nullptr, PluginFieldType::kINT32, 1));
     mFC.nbFields = mPluginAttributes.size();
     mFC.fields = mPluginAttributes.data();
 }
