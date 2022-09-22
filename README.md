@@ -6,6 +6,7 @@ Just add some new custom tensorRT plugin
 
 - BatchedNMSLandmark_TRT, BatchedNMSLandmarkDynamic_TRT: Batched NMS with face landmark
 - BatchedNMSLandmarkConf_TRT, BatchedNMSLandmarkConfDynamic_TRT: Batched NMS with face lanmdark & confidence
+- EfficientNMSLandmark_TRT: Efficient NMS with face landmark
 - RoIAlignDynamic: Same ONNX RoIAlign, copy from [MMCVRoIAlign](https://github.com/open-mmlab/mmdeploy)
 
 ## Prerequisites

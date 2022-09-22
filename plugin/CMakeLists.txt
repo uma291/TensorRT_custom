@@ -39,6 +39,7 @@ set(PLUGIN_LISTS
     decodeBbox3DPlugin
     detectionLayerPlugin
     efficientNMSPlugin
+    efficientNMSLandmarkPlugin
     efficientNMSPlugin/tftrt
     flattenConcat
     generateDetectionPlugin
