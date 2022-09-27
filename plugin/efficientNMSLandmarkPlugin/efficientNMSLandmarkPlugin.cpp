@@ -335,8 +335,9 @@ int EfficientNMSLandmarkPlugin::enqueue(const PluginTensorDesc* inputDesc, const
         void* nmsClassesOutput = outputs[3];
         void* nmsLandmarksOutput = outputs[4];
 
-        return EfficientNMSLandmarkInference(mParam, boxesInput, scoresInput, landmarksInput, anchorsInput, numDetectionsOutput,
-            nmsBoxesOutput, nmsScoresOutput, nmsClassesOutput, nmsLandmarksOutput, workspace, stream);
+        return EfficientNMSLandmarkInference(mParam, boxesInput, scoresInput, landmarksInput, anchorsInput,
+            numDetectionsOutput, nmsBoxesOutput, nmsScoresOutput, nmsClassesOutput, nmsLandmarksOutput, workspace,
+            stream);
     }
     catch (const std::exception& e)
     {

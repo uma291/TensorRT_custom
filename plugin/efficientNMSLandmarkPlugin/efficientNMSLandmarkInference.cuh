@@ -260,7 +260,7 @@ struct __align__(4 * sizeof(T)) BoxCenterSize
 template <typename T>
 struct Landmark
 {
-    T lmkx1, lmky1, lmkx2, lmky2, lmkx3, lmky3, lmkx4, lmky4, lmkx5, lmky5;
+    T lmk[10];
 };
 
 #endif

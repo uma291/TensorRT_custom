@@ -113,16 +113,8 @@ __device__ void MapNMSLandmarkData(EfficientNMSLandmarkParameters param, int idx
     // boxMap: Holds the box that corresponds to the idx'th sorted score being processed by NMS.
     boxMap = DecodeBoxesLandmark<T, Tb>(param, boxIdxMap, anchorIdxMap, boxesInput, anchorsInput);
 
-    landmarkMap.lmkx1 = landmarksInput[boxIdxMap * 10 + 0];
-    landmarkMap.lmky1 = landmarksInput[boxIdxMap * 10 + 1];
-    landmarkMap.lmkx2 = landmarksInput[boxIdxMap * 10 + 2];
-    landmarkMap.lmky2 = landmarksInput[boxIdxMap * 10 + 3];
-    landmarkMap.lmkx3 = landmarksInput[boxIdxMap * 10 + 4];
-    landmarkMap.lmky3 = landmarksInput[boxIdxMap * 10 + 5];
-    landmarkMap.lmkx4 = landmarksInput[boxIdxMap * 10 + 6];
-    landmarkMap.lmky4 = landmarksInput[boxIdxMap * 10 + 7];
-    landmarkMap.lmkx5 = landmarksInput[boxIdxMap * 10 + 8];
-    landmarkMap.lmky5 = landmarksInput[boxIdxMap * 10 + 9];
+    for (size_t idx_lmk = 0; idx_lmk < 10; idx_lmk++)
+        landmarkMap.lmk[idx_lmk] = landmarksInput[boxIdxMap * 10 + idx_lmk];
 }
 
 template <typename T>
@@ -154,16 +146,8 @@ __device__ void WriteNMSLandmarkResult(EfficientNMSLandmarkParameters param, int
         nmsBoxesOutput[outputIdx] = threadBox;
     }
 
-    nmsLandmarksOutput[outputIdx * 10 + 0] = threadLandmark.lmkx1;
-    nmsLandmarksOutput[outputIdx * 10 + 1] = threadLandmark.lmky1;
-    nmsLandmarksOutput[outputIdx * 10 + 2] = threadLandmark.lmkx2;
-    nmsLandmarksOutput[outputIdx * 10 + 3] = threadLandmark.lmky2;
-    nmsLandmarksOutput[outputIdx * 10 + 4] = threadLandmark.lmkx3;
-    nmsLandmarksOutput[outputIdx * 10 + 5] = threadLandmark.lmky3;
-    nmsLandmarksOutput[outputIdx * 10 + 6] = threadLandmark.lmkx4;
-    nmsLandmarksOutput[outputIdx * 10 + 7] = threadLandmark.lmky4;
-    nmsLandmarksOutput[outputIdx * 10 + 8] = threadLandmark.lmkx5;
-    nmsLandmarksOutput[outputIdx * 10 + 9] = threadLandmark.lmky5;
+    for (size_t idx_lmk = 0; idx_lmk < 10; idx_lmk++)
+        nmsLandmarksOutput[outputIdx * 10 + idx_lmk] = threadLandmark.lmk[idx_lmk];
 
     numDetectionsOutput[imageIdx] = resultsCounter;
 }
