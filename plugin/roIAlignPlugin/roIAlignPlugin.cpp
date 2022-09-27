@@ -31,7 +31,7 @@ using nvinfer1::plugin::RoIAlignDynamicPluginCreator;
 namespace
 {
 static const char* PROPOSAL_PLUGIN_VERSION{"1"};
-static const char* PROPOSAL_PLUGIN_NAMES[] = {"RoIAlignDynamic"};
+static const char* PROPOSAL_PLUGIN_NAMES[] = {"ROIAlign_TRT"};
 static const float RPN_STD_SCALING{1.0f};
 } // namespace
 
