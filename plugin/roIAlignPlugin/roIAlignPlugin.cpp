@@ -30,9 +30,8 @@ using nvinfer1::plugin::RoIAlignDynamicPluginCreator;
 // plugin specific constants
 namespace
 {
-static const char* PROPOSAL_PLUGIN_VERSION{"1"};
-static const char* PROPOSAL_PLUGIN_NAMES[] = {"ROIAlign_TRT"};
-static const float RPN_STD_SCALING{1.0f};
+static const char* ROIALIGN_PLUGIN_VERSION{"1"};
+static const char* ROIALIGN_PLUGIN_NAME{"RoIAlignDynamic_TRT"};
 } // namespace
 
 // Static class fields initialization
@@ -93,19 +92,19 @@ RoIAlignDynamicPlugin::RoIAlignDynamicPlugin(const std::string name, const void*
     mSampleRatio = readFromBuffer<int>(d);
     mPoolMode = readFromBuffer<int>(d);
     mAligned = readFromBuffer<int>(d);
-    assert(d == a + length);
+    ASSERT(d == a + length);
 }
 
 RoIAlignDynamicPlugin::~RoIAlignDynamicPlugin() noexcept {}
 
 const char* RoIAlignDynamicPlugin::getPluginType() const noexcept
 {
-    return PROPOSAL_PLUGIN_NAMES[0];
+    return ROIALIGN_PLUGIN_NAME;
 }
 
 const char* RoIAlignDynamicPlugin::getPluginVersion() const noexcept
 {
-    return PROPOSAL_PLUGIN_VERSION;
+    return ROIALIGN_PLUGIN_VERSION;
 }
 
 int RoIAlignDynamicPlugin::getNbOutputs() const noexcept
@@ -119,8 +118,15 @@ DimsExprs RoIAlignDynamicPlugin::getOutputDimensions(
     // Validate input arguments
     ASSERT(outputIndex == 0);
     ASSERT(nbInputs == 2);
+
+    // Shape of feature_map input should be
+    // Constant shape: [batch_size, C, W, H] or Dynamic shape: some dimension values may be -1
     ASSERT(inputs[0].nbDims == 4);
+
+    // Shape of roi input should be
+    // Constant shape: [R, 5] or Dynamic shape: some dimension values may be -1
     ASSERT(inputs[1].nbDims == 2);
+
     DimsExprs out_dim;
     out_dim.nbDims = 4;
     out_dim.d[0] = inputs[1].d[0];
@@ -156,17 +162,6 @@ size_t RoIAlignDynamicPlugin::getWorkspaceSize(
 int RoIAlignDynamicPlugin::enqueue(const PluginTensorDesc* inputDesc, const PluginTensorDesc* outputDesc,
     const void* const* inputs, void* const* outputs, void* workspace, cudaStream_t stream) noexcept
 {
-    // TODO:
-    // int status = -1;
-    // // Our plugin outputs only one tensor
-    // void* output = outputs[0];
-    // int batchSize = inputDesc[0].dims.d[0];
-    // status = proposalInference_gpu(stream, inputs[0], inputs[1], batchSize, mInputHeight, mInputWidth, mRpnHeight,
-    //     mRpnWidth, mMaxBoxNum, mPreNmsTopN, &mAnchorSizes[0], mAnchorSizeNum, &mAnchorRatios[0], mAnchorRatioNum,
-    //     mRpnStdScaling, mRpnStride, mBboxMinSize, mNmsIouThreshold, workspace, output);
-    // ASSERT(status == STATUS_SUCCESS);
-    // return status;
-
     int channels = inputDesc[0].dims.d[1];
     int height = inputDesc[0].dims.d[2];
     int width = inputDesc[0].dims.d[3];
@@ -209,8 +204,7 @@ int RoIAlignDynamicPlugin::enqueue(const PluginTensorDesc* inputDesc, const Plug
 
 size_t RoIAlignDynamicPlugin::getSerializationSize() const noexcept
 {
-    return sizeof(mOutWidth) + sizeof(mOutHeight) + sizeof(mSpatialScale) + sizeof(mSampleRatio) + sizeof(mPoolMode)
-        + sizeof(mAligned);
+    return 5 * sizeof(int) + 1 * sizeof(float);
 }
 
 void RoIAlignDynamicPlugin::serialize(void* buffer) const noexcept
@@ -222,7 +216,7 @@ void RoIAlignDynamicPlugin::serialize(void* buffer) const noexcept
     writeToBuffer<int>(d, mSampleRatio);
     writeToBuffer<int>(d, mPoolMode);
     writeToBuffer<int>(d, mAligned);
-    assert(d == a + getSerializationSize());
+    ASSERT(d == a + getSerializationSize());
 }
 
 bool RoIAlignDynamicPlugin::supportsFormatCombination(
@@ -298,7 +292,7 @@ RoIAlignBasePluginCreator::RoIAlignBasePluginCreator() noexcept
 
 RoIAlignDynamicPluginCreator::RoIAlignDynamicPluginCreator() noexcept
 {
-    mPluginName = PROPOSAL_PLUGIN_NAMES[0];
+    mPluginName = ROIALIGN_PLUGIN_NAME;
 }
 
 const char* RoIAlignBasePluginCreator::getPluginName() const noexcept
@@ -308,7 +302,7 @@ const char* RoIAlignBasePluginCreator::getPluginName() const noexcept
 
 const char* RoIAlignBasePluginCreator::getPluginVersion() const noexcept
 {
-    return PROPOSAL_PLUGIN_VERSION;
+    return ROIALIGN_PLUGIN_VERSION;
 }
 
 const PluginFieldCollection* RoIAlignBasePluginCreator::getFieldNames() noexcept
@@ -319,7 +313,6 @@ const PluginFieldCollection* RoIAlignBasePluginCreator::getFieldNames() noexcept
 IPluginV2DynamicExt* RoIAlignDynamicPluginCreator::createPlugin(
     const char* name, const PluginFieldCollection* fc) noexcept
 {
-
     const PluginField* fields = fc->fields;
     int nbFields = fc->nbFields;
 
@@ -371,7 +364,7 @@ IPluginV2DynamicExt* RoIAlignDynamicPluginCreator::createPlugin(
             {
                 std::cout << "Unknown pool mode \"" << poolModeStr << "\"." << std::endl;
             }
-            assert(poolMode >= 0);
+            ASSERT(poolMode >= 0);
         }
         else if (!strcmp(attr_name, "aligned"))
         {

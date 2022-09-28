@@ -37,6 +37,7 @@ using namespace nvinfer1::plugin;
 #include "detectionLayerPlugin.h"
 #include "efficientNMSPlugin.h"
 #include "efficientNMSLandmarkPlugin.h"
+#include "efficientNMSCustomPlugin.h"
 #include "tftrt/efficientNMSImplicitTFTRTPlugin.h"
 #include "tftrt/efficientNMSExplicitTFTRTPlugin.h"
 #include "flattenConcat.h"
@@ -63,6 +64,7 @@ using namespace nvinfer1::plugin;
 #include "split.h"
 #include "voxelGenerator.h"
 #include "roIAlignPlugin.h"
+#include "roIAlign2Plugin.h"
 
 using nvinfer1::plugin::RPROIParams;
 
@@ -185,6 +187,7 @@ extern "C"
         initializePlugin<nvinfer1::plugin::DecodeBbox3DPluginCreator>(logger, libNamespace);
         initializePlugin<nvinfer1::plugin::DetectionLayerPluginCreator>(logger, libNamespace);
         initializePlugin<nvinfer1::plugin::EfficientNMSPluginCreator>(logger, libNamespace);
+        initializePlugin<nvinfer1::plugin::EfficientNMSCustomPluginCreator>(logger, libNamespace);
         initializePlugin<nvinfer1::plugin::EfficientNMSLandmarkPluginCreator>(logger, libNamespace);
         initializePlugin<nvinfer1::plugin::EfficientNMSONNXPluginCreator>(logger, libNamespace);
         initializePlugin<nvinfer1::plugin::EfficientNMSExplicitTFTRTPluginCreator>(logger, libNamespace);
@@ -215,6 +218,7 @@ extern "C"
         initializePlugin<nvinfer1::plugin::SplitPluginCreator>(logger, libNamespace);
         initializePlugin<nvinfer1::plugin::VoxelGeneratorPluginCreator>(logger, libNamespace);
         initializePlugin<nvinfer1::plugin::RoIAlignDynamicPluginCreator>(logger, libNamespace);
+        initializePlugin<nvinfer1::plugin::RoIAlign2DynamicPluginCreator>(logger, libNamespace);
         return true;
     }
 } // extern "C"

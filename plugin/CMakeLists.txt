@@ -39,6 +39,7 @@ set(PLUGIN_LISTS
     decodeBbox3DPlugin
     detectionLayerPlugin
     efficientNMSPlugin
+    efficientNMSCustomPlugin
     efficientNMSLandmarkPlugin
     efficientNMSPlugin/tftrt
     flattenConcat
@@ -65,6 +66,7 @@ set(PLUGIN_LISTS
     splitPlugin
     voxelGeneratorPlugin
     roIAlignPlugin
+    roIAlign2Plugin
     )
 
 # Add BERT sources if ${BERT_GENCODES} was populated

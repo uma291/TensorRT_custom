@@ -277,6 +277,11 @@ cudaError_t roiAlign(cudaStream_t stream, int batchSize, int featureCount, int r
 
     void* pooled, const xy_t poolDims);
 
+cudaError_t roiAlign(const cudaStream_t stream, const int batchSize, const int imageSize,
+    const int featureCount, const int roiCount, const int transformCoords,
+    const bool absCoords, const bool swapCoords, const int samplingRatio,
+    const void* rois, const void* layers, const xy_t layerDims, void* pooled, const int poolDims);
+
 cudaError_t roiAlignHalfCenter(cudaStream_t stream, int batchSize, int featureCount, int roiCount, float firstThreshold,
 
     int inputHeight, int inputWidth, const void* rois, const void* const layers[], const xy_t* layerDims,
