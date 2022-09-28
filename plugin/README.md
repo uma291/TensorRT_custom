@@ -42,6 +42,14 @@
 | [specialSlicePlugin](specialSlicePlugin) | SpecialSlice_TRT | 1 |
 | [splitPlugin](splitPlugin) | Split | 1 |
 | [voxelGeneratorPlugin](voxelGeneratorPlugin) | VoxelGeneratorPlugin | 1 |
+| [batchedNMSLandmarkPlugin](batchedNMSLandmarkPlugin) | BatchedNMSLandmark_TRT | 1 |
+| [batchedNMSLandmarkPlugin](batchedNMSLandmarkPlugin) | BatchedNMSLandmarkDynamic_TRT | 1 |
+| [batchedNMSLandmarkConfPlugin](batchedNMSLandmarkConfPlugin) | BatchedNMSLandmarkConf_TRT | 1 |
+| [batchedNMSLandmarkConfPlugin](batchedNMSLandmarkConfPlugin) | BatchedNMSLandmarkConfDynamic_TRT | 1 |
+| [efficientNMSLandmarkPlugin](efficientNMSLandmarkPlugin) | EfficientNMSLandmark_TRT | 1 |
+| [efficientNMSCustomPlugin](efficientNMSCustomPlugin) | EfficientNMSCustom_TRT | 1 |
+| [roIAlignPlugin](roIAlignPlugin) | RoIAlignDynamic_TRT | 1 |
+| [roIAlign2Plugin](roIAlign2Plugin) | RoIAlign2Dynamic_TRT | 1 |
 
 ## Known Limitations
 

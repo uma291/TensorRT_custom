@@ -1,4 +1,4 @@
-# Efficient NMS Plugin
+# Efficient NMS Custom Plugin
 
 #### Table of Contents
 - [Description](#description)
@@ -88,6 +88,9 @@ The following four output tensors are generated:
 
 - **detection_classes:**
   This is a `[batch_size, max_output_boxes]` tensor of data type `int32`, containing the classes for the boxes.
+
+- **detection_indices:**
+  This is a `[batch_size, max_output_boxes]` tensor of data type `int32`, containing the indices for the boxes.
 
 ### Parameters
 

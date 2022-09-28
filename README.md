@@ -4,10 +4,12 @@ Just add some new custom tensorRT plugin
 
 ## New plugin
 
-- BatchedNMSLandmark_TRT, BatchedNMSLandmarkDynamic_TRT: Batched NMS with face landmark
-- BatchedNMSLandmarkConf_TRT, BatchedNMSLandmarkConfDynamic_TRT: Batched NMS with face lanmdark & confidence
-- EfficientNMSLandmark_TRT: Efficient NMS with face landmark
-- RoIAlignDynamic: Same ONNX RoIAlign, copy from [MMCVRoIAlign](https://github.com/open-mmlab/mmdeploy)
+- [BatchedNMSLandmark_TRT](./plugin/batchedNMSLandmarkPlugin/), BatchedNMSLandmarkDynamic_TRT: Batched NMS with face landmark
+- [BatchedNMSLandmarkConf_TRT](./plugin/batchedNMSLandmarkConfPlugin/), BatchedNMSLandmarkConfDynamic_TRT: Batched NMS with face lanmdark & confidence
+- [EfficientNMSLandmark_TRT](./plugin/efficientNMSLandmarkPlugin/): Efficient NMS with face landmark
+- [EfficientNMSCustom_TRT](./plugin/efficientNMSCustomPlugin/): Same Efficient NMS, but return boxes indices
+- [RoIAlignDynamic](./plugin/roIAlignPlugin/): Same ONNX RoIAlign, copy from [MMCVRoIAlign](https://github.com/open-mmlab/mmdeploy)
+- [RoIAlign2Dynamic](./plugin/roIAlign2Plugin/): Same as pyramidROIAlignPlugin, but only one feature_map.
 
 ## Prerequisites
 
