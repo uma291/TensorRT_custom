@@ -13,7 +13,7 @@ Just add some new custom tensorRT plugin
 
 ## Prerequisites
 
-- Deepstream 6.0.1
+- Deepstream 6.0.1 or Deepstream 6.1
 
 ## Install
 
