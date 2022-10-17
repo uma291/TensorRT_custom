@@ -1,0 +1,272 @@
+make all --print-data-base --no-builtin-variables --no-builtin-rules --question
+# GNU Make 4.1
+# Built for x86_64-pc-linux-gnu
+# Copyright (C) 1988-2014 Free Software Foundation, Inc.
+# License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+# This is free software: you are free to change and redistribute it.
+# There is NO WARRANTY, to the extent permitted by law.
+
+# Make data base, printed on Sun Aug 28 15:52:29 2022
+
+# Variables
+
+# environment
+DS_REL_PKG = deepstream_sdk_v6.0.1_x86_64.tbz2
+# automatic
+<D = $(patsubst %/,%,$(dir $<))
+# automatic
+?F = $(notdir $?)
+# default
+.SHELLFLAGS := -c
+# environment
+NVIDIA_VISIBLE_DEVICES = all
+# environment
+NV_CUDA_CUDART_DEV_VERSION = 11.4.108-1
+# environment
+VSCODE_LOG_NATIVE = false
+# automatic
+?D = $(patsubst %/,%,$(dir $?))
+# automatic
+@D = $(patsubst %/,%,$(dir $@))
+# automatic
+@F = $(notdir $@)
+# environment
+NV_LIBCUBLAS_PACKAGE = libcublas-11-4=11.5.4.8-1
+# default
+SHELL := /bin/sh
+# environment
+VSCODE_NLS_CONFIG = {"locale":"en","availableLanguages":{}}
+# environment
+NV_LIBNCCL_DEV_PACKAGE_NAME = libnccl-dev
+# environment
+NV_CUDA_CUDART_VERSION = 11.4.108-1
+# makefile
+MAKEFILE_LIST := 
+# 'override' directive
+GNUMAKEFLAGS := 
+# environment
+NV_LIBNCCL_PACKAGE_NAME = libnccl2
+# environment
+VSCODE_VERBOSE_LOGGING = true
+# environment
+NV_LIBCUSPARSE_DEV_VERSION = 11.6.0.100-1
+# environment
+NV_NVTX_VERSION = 11.4.100-1
+# environment
+VSCODE_PROXY_URI = https://dscilab.site:20007/hiennx/code/proxy/{{port}}
+# environment
+VSCODE_CWD = /home/coder
+# default
+MAKE_HOST := x86_64-pc-linux-gnu
+# environment
+PATH = /usr/lib/code-server/lib/vscode/bin/remote-cli:/usr/local/nvidia/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+# environment
+NCCL_VERSION = 2.11.4-1
+# environment
+NV_LIBCUSPARSE_VERSION = 11.6.0.100-1
+# makefile
+CURDIR := /home/coder/project/TensorRT
+# environment
+LIBRARY_PATH = /usr/local/cuda/lib64/stubs
+# environment
+VSCODE_LOG_STACK = false
+# environment
+NV_LIBNPP_DEV_VERSION = 11.4.0.90-1
+# default
+.FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
+# environment
+TAG = gmc1
+# environment
+NODE_OPTIONS = --max-old-space-size=2048 
+# automatic
+%F = $(notdir $%)
+# environment
+VSCODE_PIPE_LOGGING = true
+# environment
+NV_LIBNPP_VERSION = 11.4.0.90-1
+# environment
+VSCODE_IPC_HOOK_CLI = /tmp/vscode-ipc-d373d1b8-cb20-4fce-9e6b-0f9590e4d104.sock
+# environment
+NVIDIA_REQUIRE_CUDA = cuda>=11.4 brand=tesla,driver>=418,driver<419 brand=tesla,driver>=440,driver<441 driver>=450
+# environment
+VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
+# environment
+HOME = /root
+# environment
+NV_CUDA_COMPAT_PACKAGE = cuda-compat-11-4
+# environment
+LD_LIBRARY_PATH = /usr/lib/x86_64-linux-gnu:/usr/lib/i386-linux-gnu:/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/usr/local/nvidia/lib:/usr/local/nvidia/lib64
+# environment
+CODE_SERVER_PARENT_PID = 12
+# environment
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = true
+# environment
+NV_LIBNCCL_DEV_PACKAGE = libnccl-dev=2.11.4-1+cuda11.4
+# environment
+VSCODE_HANDLES_UNCAUGHT_ERRORS = true
+# automatic
+^D = $(patsubst %/,%,$(dir $^))
+# environment
+HOSTNAME = 1d7bac54a397
+# environment
+NV_LIBNPP_DEV_PACKAGE = libnpp-dev-11-4=11.4.0.90-1
+# environment
+MAKELEVEL := 0
+# environment
+NV_LIBCUBLAS_DEV_PACKAGE_NAME = libcublas-dev-11-4
+# default
+MAKE = $(MAKE_COMMAND)
+# default
+MAKECMDGOALS := all
+# environment
+NV_CUDA_LIB_VERSION = 11.4.1-1
+# environment
+NV_LIBNCCL_DEV_PACKAGE_VERSION = 2.11.4-1
+# default
+MAKE_VERSION := 4.1
+# environment
+USER = coder
+# makefile
+.DEFAULT_GOAL := 
+# environment
+NV_LIBNPP_PACKAGE = libnpp-11-4=11.4.0.90-1
+# environment
+NV_LIBCUBLAS_PACKAGE_NAME = libcublas-11-4
+# environment
+DS_VERSION = 6.0.1
+# automatic
+%D = $(patsubst %/,%,$(dir $%))
+# environment
+NV_LIBNCCL_PACKAGE_VERSION = 2.11.4-1
+# environment
+CUDA_VERSION = 11.4.1
+# default
+MAKE_COMMAND := make
+# default
+.VARIABLES := 
+# automatic
+*F = $(notdir $*)
+# makefile
+MAKEFLAGS = pqrR
+# environment
+MFLAGS = -pqrR
+# automatic
+*D = $(patsubst %/,%,$(dir $*))
+# automatic
++D = $(patsubst %/,%,$(dir $+))
+# automatic
++F = $(notdir $+)
+# environment
+NVARCH = x86_64
+# environment
+DS_REL_PKG_DIR = deepstream_sdk_v6.0.1_x86_64
+# environment
+NV_NVML_DEV_VERSION = 11.4.43-1
+# environment
+NV_LIBCUBLAS_DEV_VERSION = 11.5.4.8-1
+# environment
+NV_LIBNCCL_PACKAGE = libnccl2=2.11.4-1+cuda11.4
+# environment
+PLATFORM = x86_64
+# default
+MAKEFILES := 
+# environment
+NVIDIA_DRIVER_CAPABILITIES = all
+# automatic
+<F = $(notdir $<)
+# environment
+CHOWN_HOME = utf-8
+# environment
+PWD = /home/coder/project/TensorRT
+# environment
+LC_ALL = C
+# environment
+NV_LIBCUBLAS_VERSION = 11.5.4.8-1
+# automatic
+^F = $(notdir $^)
+# default
+SUFFIXES := 
+# default
+.INCLUDE_DIRS = /usr/include /usr/local/include /usr/include
+# environment
+VSCODE_INJECT_NODE_MODULE_LOOKUP_PATH = /usr/lib/code-server/lib/vscode/remote/node_modules
+# default
+.RECIPEPREFIX := 
+# environment
+LANG = C
+# environment
+VSCODE_EXTHOST_WILL_SEND_SOCKET = true
+# environment
+NV_LIBCUBLAS_DEV_PACKAGE = libcublas-dev-11-4=11.5.4.8-1
+# variable set hash-table stats:
+# Load=94/1024=9%, Rehash=0, Collisions=7/115=6%
+
+# Pattern-specific Variable Values
+
+# No pattern-specific variable values.
+
+# Directories
+
+# . (device 64769, inode 127404527): 32 files, no impossibilities.
+
+# 32 files, no impossibilities in 1 directories.
+
+# Implicit Rules
+
+# No implicit rules.
+
+# Files
+
+# Not a target:
+all:
+#  Command line target.
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has not been updated.
+
+# Not a target:
+Makefile:
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has been updated.
+#  Failed to be updated.
+
+# Not a target:
+makefile:
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has been updated.
+#  Failed to be updated.
+
+# Not a target:
+.DEFAULT:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+GNUmakefile:
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has been updated.
+#  Failed to be updated.
+
+# files hash-table stats:
+# Load=6/1024=1%, Rehash=0, Collisions=0/15=0%
+# VPATH Search Paths
+
+# No 'vpath' search paths.
+
+# No general ('VPATH' variable) search path.
+
+# strcache buffers: 1 (0) / strings = 40 / storage = 393 B / avg = 9 B
+# current buf: size = 8162 B / used = 393 B / count = 40 / avg = 9 B
+
+# strcache performance: lookups = 43 / hit rate = 6%
+# hash-table stats:
+# Load=40/8192=0%, Rehash=0, Collisions=1/43=2%
+# Finished Make data base on Sun Aug 28 15:52:29 2022
+
+ 
+make: *** No rule to make target 'all'.  Stop.
+
