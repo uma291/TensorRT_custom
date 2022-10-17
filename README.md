@@ -48,7 +48,7 @@ sudo make install
 | 6.1                | TRT 8.2.5.1 | release/8.2          | Yes     |
 
 ```
-git clone -b release/8.2 https://github.com/nvidia/TensorRT
+git clone -b release/8.2 https://github.com/hiennguyen9874/TensorRT
 cd TensorRT/
 git submodule update --init --recursive
 export TRT_SOURCE=`pwd`
