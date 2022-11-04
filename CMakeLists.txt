@@ -99,7 +99,6 @@ find_package(Threads REQUIRED)
 if (BUILD_PLUGINS OR BUILD_PARSERS)
     include(third_party/zlib.cmake)
     include(third_party/protobuf.cmake)
-    include(third_party/cub)
 endif()
 if(NOT CUB_ROOT_DIR)
   if (CUDA_VERSION VERSION_LESS 11.0)
@@ -115,6 +114,7 @@ endif()
 include_directories(
     ${CUDA_INCLUDE_DIRS}
     ${CUDNN_ROOT_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/cub
 )
 find_library(CUDNN_LIB cudnn HINTS
     ${CUDA_TOOLKIT_ROOT_DIR} ${CUDNN_ROOT_DIR} PATH_SUFFIXES lib64 lib)
