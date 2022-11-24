@@ -61,6 +61,18 @@ inline __device__ __half add_fb(const __half & a, const half & b) {
     #endif
 }
 
+inline __device__ __half div_fb(const __half & a, const __half & b) {
+#if __CUDA_ARCH__ >= 530
+    return a / b;
+#else
+    return __float2half(__half2float(a) / __half2float(b));
+#endif
+}
+
+inline __device__ float div_fb(const float & a, const float & b) {
+    return a / b;
+}
+
 template <typename DType>
 __global__ void argMaxReset_kernel(
     int samples, int NClass, const DType* in_scores, const int* maxIdx, DType* out_scores)
@@ -2641,6 +2653,144 @@ cudaError_t roiAlign(cudaStream_t const stream, int32_t const batchSize, xy_t co
         static_cast<float const*>(layers[0]), layerDims[0], static_cast<float const*>(layers[1]), layerDims[1],
         static_cast<float const*>(layers[2]), layerDims[2], static_cast<float const*>(layers[3]), layerDims[3],
         static_cast<float*>(pooled), poolDims);
+    return cudaGetLastError();
+}
+
+template <typename Trois, typename Tfeat>
+__global__ void roiAlign_kernel(int const imageSize, int const featureCount, int const roiCount,
+    int const transformCoords, bool const absCoords, bool const swapCoords,
+    int const samplingRatio, Trois const* rois, Tfeat const* P2, xy_t const P2dims,
+    Tfeat* pooled, int const poolDims)
+{
+    int const batch = blockIdx.x;
+    int const feature = blockIdx.y;
+    int const roiIdx = blockIdx.z;
+
+    Trois const* roi = rois + 4 * (batch * roiCount + roiIdx);
+    float y1, x1, y2, x2;
+    if (swapCoords)
+    {
+        y1 = min(roi[0], roi[2]);
+        x1 = min(roi[1], roi[3]);
+        y2 = max(roi[0], roi[2]);
+        x2 = max(roi[1], roi[3]);
+    }
+    else
+    {
+        x1 = min(roi[0], roi[2]);
+        y1 = min(roi[1], roi[3]);
+        x2 = max(roi[0], roi[2]);
+        y2 = max(roi[1], roi[3]);
+    }
+    if (absCoords)
+    {
+        y1 = max(0.F, min(static_cast<float>(imageSize), y1)) / imageSize;
+        x1 = max(0.F, min(static_cast<float>(imageSize), x1)) / imageSize;
+        y2 = max(0.F, min(static_cast<float>(imageSize), y2)) / imageSize;
+        x2 = max(0.F, min(static_cast<float>(imageSize), x2)) / imageSize;
+    }
+    else
+    {
+        y1 = max(0.F, min(1.F, y1));
+        x1 = max(0.F, min(1.F, x1));
+        y2 = max(0.F, min(1.F, y2));
+        x2 = max(0.F, min(1.F, x2));
+    }
+
+    Tfeat const* src = P2;
+    xy_t srcDims = P2dims;
+
+    src += srcDims.x * srcDims.y * (batch * featureCount + feature);
+
+    Tfeat* dst = pooled + poolDims * poolDims * (batch * roiCount * featureCount + roiIdx * featureCount + feature);
+
+    float yStart, xStart, yEnd, xEnd, yDelta, xDelta;
+    float samplingOffset;
+    if (transformCoords == -1)
+    {
+        // Back-Compatibility with old PyramidROIAlign implementation.
+        samplingOffset = 0.F;
+
+        yStart = y1 * (srcDims.y - 1);
+        xStart = x1 * (srcDims.x - 1);
+
+        yEnd = y2 * (srcDims.y - 1);
+        xEnd = x2 * (srcDims.x - 1);
+
+        yDelta = (yEnd - yStart) / (poolDims - 1);
+        xDelta = (xEnd - xStart) / (poolDims - 1);
+    }
+    else
+    {
+        float inputOffset;
+        if (transformCoords == 0) // No Half Pixel
+        {
+            inputOffset = 0.F;
+            samplingOffset = 0.F;
+        }
+        if (transformCoords == 1) // Output Half Pixel
+        {
+            inputOffset = 0.F;
+            samplingOffset = 0.5F;
+        }
+        if (transformCoords == 2) // Half Pixel
+        {
+            inputOffset = 0.5F;
+            samplingOffset = 0.5F;
+        }
+
+        yStart = y1 * srcDims.y - inputOffset;
+        xStart = x1 * srcDims.x - inputOffset;
+
+        yEnd = y2 * srcDims.y - inputOffset;
+        xEnd = x2 * srcDims.x - inputOffset;
+
+        yDelta = (yEnd - yStart) / poolDims;
+        xDelta = (xEnd - xStart) / poolDims;
+    }
+
+    int const samplingRatioX
+        = samplingRatio > 0 ? samplingRatio : max(1, static_cast<int>(ceilf((xEnd - xStart) / poolDims)));
+    int const samplingRatioY
+        = samplingRatio > 0 ? samplingRatio : max(1, static_cast<int>(ceilf((yEnd - yStart) / poolDims)));
+    int const samplingCount = samplingRatioX * samplingRatioY;
+
+    for (int outIdx = threadIdx.x; outIdx < poolDims * poolDims; outIdx += blockDim.x)
+    {
+        int xx = outIdx % poolDims;
+        int yy = outIdx / poolDims;
+        Tfeat* out = dst + poolDims * yy + xx;
+        Tfeat result = 0;
+        for (int iy = 0; iy < samplingRatioY; iy++)
+        {
+            float ySample = yStart + yDelta * yy;
+            ySample += yDelta * (iy + samplingOffset) / samplingRatioY;
+            ySample = min(max(ySample, 0.F), srcDims.y - 1.F);
+
+            for (int ix = 0; ix < samplingRatioX; ix++)
+            {
+                float xSample = xStart + xDelta * xx;
+                xSample += xDelta * (ix + samplingOffset) / samplingRatioX;
+                xSample = min(max(xSample, 0.F), srcDims.x - 1.F);
+
+                result += interpolateBilinear(src, srcDims, ySample, xSample);
+            }
+        }
+        *out = result / samplingCount;
+    }
+}
+
+cudaError_t roiAlign(cudaStream_t const stream, int const batchSize, int const imageSize,
+    int const featureCount, int const roiCount, int const transformCoords,
+    bool const absCoords, bool const swapCoords, int const samplingRatio,
+    void const* rois, void const* layers, xy_t const layerDims, void* pooled, int const poolDims)
+{
+    const dim3 blocks(batchSize, featureCount, roiCount);
+    int const threads(min(256, poolDims * poolDims));
+
+    roiAlign_kernel<<<blocks, threads, 0, stream>>>(imageSize, featureCount, roiCount, transformCoords,
+        absCoords, swapCoords, samplingRatio, static_cast<const float*>(rois), static_cast<const float*>(layers), layerDims, static_cast<float*>(pooled), poolDims);
+
     return cudaGetLastError();
 }
 

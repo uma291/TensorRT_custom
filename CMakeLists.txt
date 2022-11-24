@@ -114,6 +114,7 @@ endif()
 include_directories(
     ${CUDA_INCLUDE_DIRS}
     ${CUDNN_ROOT_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/third_party/cub
 )
 find_library(CUDNN_LIB cudnn HINTS
     ${CUDA_TOOLKIT_ROOT_DIR} ${CUDNN_ROOT_DIR} PATH_SUFFIXES lib64 lib)

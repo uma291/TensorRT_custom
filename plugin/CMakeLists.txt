@@ -40,6 +40,8 @@ set(PLUGIN_LISTS
     disentangledAttentionPlugin
     efficientNMSPlugin
     efficientNMSPlugin/tftrt
+    efficientNMSCustomPlugin
+    efficientNMSLandmarkPlugin
     flattenConcat
     generateDetectionPlugin
     gridAnchorPlugin
@@ -64,6 +66,8 @@ set(PLUGIN_LISTS
     specialSlicePlugin
     splitPlugin
     voxelGeneratorPlugin
+    roIAlignPlugin
+    roIAlign2Plugin
     )
 
 # Add BERT sources if ${BERT_GENCODES} was populated
