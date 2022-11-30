@@ -598,11 +598,11 @@ pluginStatus_t EfficientNMSLandmarkDispatch(EfficientNMSLandmarkParameters param
     cudaStream_t stream)
 {
     // Clear Outputs (not all elements will get overwritten by the kernels, so safer to clear everything out)
-    CSC(cudaMemsetAsync(numDetectionsOutput, 0x00, param.batchSize * sizeof(int), stream));
-    CSC(cudaMemsetAsync(nmsScoresOutput, 0x00, param.batchSize * param.numOutputBoxes * sizeof(T), stream));
-    CSC(cudaMemsetAsync(nmsBoxesOutput, 0x00, param.batchSize * param.numOutputBoxes * 4 * sizeof(T), stream));
-    CSC(cudaMemsetAsync(nmsClassesOutput, 0x00, param.batchSize * param.numOutputBoxes * sizeof(int), stream));
-    CSC(cudaMemsetAsync(nmsLandmarksOutput, 0x00, param.batchSize * param.numOutputBoxes * 10 * sizeof(T), stream));
+    CSC(cudaMemsetAsync(numDetectionsOutput, 0x00, param.batchSize * sizeof(int), stream), STATUS_FAILURE);
+    CSC(cudaMemsetAsync(nmsScoresOutput, 0x00, param.batchSize * param.numOutputBoxes * sizeof(T), stream), STATUS_FAILURE);
+    CSC(cudaMemsetAsync(nmsBoxesOutput, 0x00, param.batchSize * param.numOutputBoxes * 4 * sizeof(T), stream), STATUS_FAILURE);
+    CSC(cudaMemsetAsync(nmsClassesOutput, 0x00, param.batchSize * param.numOutputBoxes * sizeof(int), stream), STATUS_FAILURE);
+    CSC(cudaMemsetAsync(nmsLandmarksOutput, 0x00, param.batchSize * param.numOutputBoxes * 10 * sizeof(T), stream), STATUS_FAILURE);
 
     // Empty Inputs
     if (param.numScoreElements < 1)
@@ -618,7 +618,7 @@ pluginStatus_t EfficientNMSLandmarkDispatch(EfficientNMSLandmarkParameters param
     int* topOffsetsEndData = topNumData + 2 * param.batchSize;
     int* outputIndexData = topNumData + 3 * param.batchSize;
     int* outputClassData = topNumData + 4 * param.batchSize;
-    CSC(cudaMemsetAsync(topNumData, 0x00, countersTotalSize * sizeof(int), stream));
+    CSC(cudaMemsetAsync(topNumData, 0x00, countersTotalSize * sizeof(int), stream), STATUS_FAILURE);
     cudaError_t status = cudaGetLastError();
     CSC(status, STATUS_FAILURE);
 
@@ -642,9 +642,9 @@ pluginStatus_t EfficientNMSLandmarkDispatch(EfficientNMSLandmarkParameters param
 
     // Device Specific Properties
     int device;
-    CSC(cudaGetDevice(&device));
+    CSC(cudaGetDevice(&device), STATUS_FAILURE);
     struct cudaDeviceProp properties;
-    CSC(cudaGetDeviceProperties(&properties, device));
+    CSC(cudaGetDeviceProperties(&properties, device), STATUS_FAILURE);
     if (properties.regsPerBlock >= 65536)
     {
         // Most Devices

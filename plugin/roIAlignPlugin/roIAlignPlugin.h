@@ -88,7 +88,7 @@ private:
     bool mAligned;
 };
 
-class RoIAlignBasePluginCreator : public BaseCreator
+class RoIAlignBasePluginCreator : public nvinfer1::pluginInternal::BaseCreator
 {
 public:
     RoIAlignBasePluginCreator() noexcept;
